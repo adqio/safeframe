@@ -75,108 +75,118 @@
           </div>
         </div>
         <div class="col-md-9" role="main">
-        <div class="bs-docs-section">
-          <!-- Simple Example ================================================== -->
-          <div class="page-header">
-            <h1 id="sf-simple-example">Simple Example</h1>
-          </div>
+          <div class="bs-docs-section">
+            <!-- Simple Example ================================================== -->
+            <div class="page-header">
+              <h1 id="sf-simple-example">Simple Example</h1>
+            </div>
           
-          <div class="row">&nbsp;</div>
-          <p>Here is the rendered ad:</p>
-          <div id="top_leaderboard" style="height:90px;"></div>
-          <div class="row">&nbsp;</div>
-          
-          <h2>How it works</h2>
-          <p>
-            This is the code on the publisher host which defines target div for the SafeFrame ad on this page:
-          </p>
-          <pre>
-&lt;div id="top_leaderboard" style="height:90px;"&gt;&lt;/div&gt;
-          </pre>
-          
-          <p>This is the JSON object that contains the ad data:</p>
-          <pre>
-&lt;script type='text/x-safeframe' class='sf_data' id="sf_tag_1" &gt;
+            <div class="row">&nbsp;</div>
+            <p>Here is the rendered ad:</p>
+            <div id="top_leaderboard" style="height:90px;"></div>
+            <div class="row">&nbsp;</div>
+            
+            <h2>How it works</h2>
+            <p>
+              This is the code on the publisher host which defines target div for the SafeFrame ad on this page:
+            </p>
+            <pre>
+              <code>
+  &lt;div id="top_leaderboard" style="height:90px;"&gt;&lt;/div&gt;
+              </code>
+            </pre>
+            
+            <p>This is the JSON object that contains the ad data:</p>
+            <pre>
+              <code>
+  &lt;script type='text/x-safeframe' class='sf_data' id="sf_tag_1" &gt;
     {
-    "id" : "ad1Leader",
-    "src" : "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
-    "conf" :
-    {
-    "size" : "728x90",
-    "dest":	"top_leaderboard"
+      "id" : "ad1Leader",
+      "src" : "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
+      "conf" :
+        {
+          "size" : "728x90",
+          "dest" : "top_leaderboard"
+        }
     }
-    }
-&lt;/script&gt;
-          </pre>
+  &lt;/script&gt;
+              </code>
+            </pre>
           
-          <p>
-            Now include the SafeFrame configuration.
-          </p>
-          <pre>
-&lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"&gt;&lt;/script&gt;
-&lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"&gt;&lt;/script&gt;
-          </pre>
+            <p>
+              Now include the SafeFrame configuration.
+            </p>
+            <pre>
+              <code>
+  &lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"&gt;&lt;/script&gt;
+  &lt;script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"&gt;&lt;/script&gt;
+  &lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"&gt;&lt;/script&gt;
+              </code>
+            </pre>
           
-          <p>
-            Finally initialize SafeFrame
-          </p>
-          <pre>
-&lt;script type="text/javascript"&gt;
-  /**
-  * Initialize a new SafeFrames publisher configuration
-  */
-  (function() {
-          var conf	= new $sf.host.Config({
-                  // Should be absolute path to render file hosted on CDN
-                  renderFile:		"http://sf.wanda.io/html/r.html",
-                  positions: {}
-          });
-
-  })();
-&lt;/script&gt;
-          </pre>
-          <!-- type="text/x-safe-frame" -->
-          <!-- 
-          TAG based safe frames follow strict parsing rules imposed by window.JSON.parse.
-          Keys MUST be inside double quote marks.  Javascript allows a much looser syntax for JSON objects
-          -->
-          <script type='text/x-safeframe' class='sf_data' id="sf_tag_1" >
-            {
-                    "id" : "ad1Leader",
-                    "src" : "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
-                    "conf" : 
-                            {
-                            "size" : "728x90",
-                            "dest":	"top_leaderboard"
-                            }
-            } 
-          </script> 
+            <p>
+              Finally initialize SafeFrame
+            </p>
+            <pre>
+              <code>
+  &lt;script type="text/javascript"&gt;
+    /**
+    * Initialize a new SafeFrames publisher configuration
+    */
+    (function() {
+            var conf = new $sf.host.Config({
+                       // Should be absolute path to render file hosted on CDN
+                       renderFile : "http://sf.wanda.io/html/r.html",
+                       positions : {}
+            });
+    })();
+  &lt;/script&gt;
+              </code>
+            </pre>
+            <!-- type="text/x-safe-frame" -->
+            <!-- 
+            TAG based safe frames follow strict parsing rules imposed by window.JSON.parse.
+            Keys MUST be inside double quote marks.  Javascript allows a much looser syntax for JSON objects
+            -->
+            <script type='text/x-safeframe' class='sf_data' id="sf_tag_1" >
+              {
+                "id" : "ad1Leader",
+                "src" : "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
+                "conf" : 
+                        {
+                          "size" : "728x90",
+                          "dest": "top_leaderboard"
+                        }
+              } 
+            </script> 
           
-          <!-- 
-          INCLUDES OF THE SAFEFRAMES FRAMEWORK 
-          These script files should be hosted on your CDN from a different 
-          top level domain from the host site.
-          -->
-          <script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"></script>
-          <script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"></script>
-          <script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"></script>
-          
-          <script type="text/javascript">
-            /**
-            * Initialize a new SafeFrames publisher configuration
-            */
-            (function() {
-                    var conf	= new $sf.host.Config({
-                            // Should be absolute path to render file hosted on CDN
-                            renderFile:		"http://sf.wanda.io/html/r.html",
-                            positions: {}
-                    });
-
-            })();
-          </script>
-      </div>
-    </div>
+            <!-- 
+            INCLUDES OF THE SAFEFRAMES FRAMEWORK 
+            These script files should be hosted on your CDN from a different 
+            top level domain from the host site.
+            -->
+            <script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"></script>
+            <script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"></script>
+            <script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"></script>
+            
+            <script type="text/javascript">
+              /**
+              * Initialize a new SafeFrames publisher configuration
+              */
+              (function() {
+                      var conf	= new $sf.host.Config({
+                              // Should be absolute path to render file hosted on CDN
+                              renderFile:		"http://sf.wanda.io/html/r.html",
+                              positions: {}
+                      });
+  
+              })();
+            </script>
+            <!-- Simple Example Ends ================================================== -->
+          </div> <!-- bs-docs-section -->
+        </div> <!-- col-md-9 -->
+      </div>  <!-- row -->
+    </div> <!-- container bs-docs-container -->
     <!-- Analytics Code -->
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
