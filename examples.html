@@ -25,9 +25,9 @@
     <!-- Favicons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../docs-assets/ico/apple-touch-icon-144-precomposed.png">
                                    <link rel="shortcut icon" href="../docs-assets/ico/favicon.png">
-
+                                   
   </head>
-  <body>
+  <body data-spy="scroll" data-target="#side-nav">
     <a class="sr-only" href="#content">Skip to main content</a>
 
     <!-- Docs master nav -->
@@ -68,7 +68,7 @@
     <div class="container bs-docs-container">
       <div class="row">
         <div class="col-md-3">
-          <div class="bs-sidebar hidden-print" data-spy="affix" role="complementary">
+          <div class="bs-sidebar hidden-print" id="side-nav" data-spy="affix" role="complementary" data-spy="affix" data-offset-top="240">
             <ul class="nav bs-sidenav">
                 <li><a href="#sf-simple-example">Simple Example</a></li>
                 <li><a href="#sf-expansion-example">Expansion Example</a></li>
@@ -88,19 +88,26 @@
             <div class="row">&nbsp;</div>
             
             <h2>How it works</h2>
+            <!--
+            <div class="panel panel-default">
+              <div class="panel-body">
+                Basic panel example
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    Nested panel example
+                    <div id="top_leaderboard2" style="height:90px;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            -->
             <p>
               This is the code on the publisher host which defines target div for the SafeFrame ad on this page:
             </p>
-            <pre>
-              <code>
-  &lt;div id="top_leaderboard" style="height:90px;"&gt;&lt;/div&gt;
-              </code>
-            </pre>
+            <pre>  &lt;div id="top_leaderboard" style="height:90px;"&gt;&lt;/div&gt;</pre>
             
             <p>This is the JSON object that contains the ad data:</p>
-            <pre>
-              <code>
-  &lt;script type='text/x-safeframe' class='sf_data' id="sf_tag_1" &gt;
+            <pre>  &lt;script type='text/x-safeframe' class='sf_data' id="sf_tag_1" &gt;
     {
       "id" : "ad1Leader",
       "src" : "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
@@ -110,40 +117,39 @@
           "dest" : "top_leaderboard"
         }
     }
-  &lt;/script&gt;
-              </code>
-            </pre>
-          
-            <p>
-              Now include the SafeFrame configuration.
-            </p>
-            <pre>
-              <code>
-  &lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"&gt;&lt;/script&gt;
-  &lt;script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"&gt;&lt;/script&gt;
-  &lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"&gt;&lt;/script&gt;
-              </code>
-            </pre>
-          
-            <p>
-              Finally initialize SafeFrame
-            </p>
-            <pre>
-              <code>
-  &lt;script type="text/javascript"&gt;
-    /**
-    * Initialize a new SafeFrames publisher configuration
-    */
-    (function() {
-            var conf = new $sf.host.Config({
-                       // Should be absolute path to render file hosted on CDN
-                       renderFile : "http://sf.wanda.io/html/r.html",
-                       positions : {}
-            });
-    })();
-  &lt;/script&gt;
-              </code>
-            </pre>
+  &lt;/script&gt;</pre>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                  Don't forget to configure and initialize SafeFrame at the foot of each page.
+                </a>
+              </div>
+              <div id="collapseOne" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <pre>&lt;!-- SafeFrame js include files and script-->
+
+&lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js">&lt;/script>
+&lt;script type="text/javascript" src="http://sf.wanda.io/js/host/host.js">&lt;/script>
+&lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js">&lt;/script>
+
+&lt;script type="text/javascript">
+  /**
+  * Initialize a new SafeFrames publisher configuration
+  */
+  (function() {
+      var conf = new $sf.host.Config({
+        // Should be absolute path to render file hosted on CDN
+        renderFile: "http://sf.wanda.io/html/r.html",
+        positions: {}
+      });
+  })();
+&lt;/script></pre>
+                  
+                  
+                </div>
+              </div>
+            </div>
             <!-- type="text/x-safe-frame" -->
             <!-- 
             TAG based safe frames follow strict parsing rules imposed by window.JSON.parse.
@@ -151,177 +157,153 @@
             -->
             <script type='text/x-safeframe' class='sf_data' id="sf_tag_1" >
               {
-                "id" : "ad1Leader",
-                "src" : "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
-                "conf" : 
+                "id": "ad1Leader",
+                "src": "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
+                "conf": 
                         {
-                          "size" : "728x90",
+                          "size": "728x90",
                           "dest": "top_leaderboard"
                         }
               } 
-            </script> 
-          
-            <!-- 
-            INCLUDES OF THE SAFEFRAMES FRAMEWORK 
-            These script files should be hosted on your CDN from a different 
-            top level domain from the host site.
-            -->
-            <script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"></script>
-            <script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"></script>
-            <script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"></script>
-            
-            <script type="text/javascript">
-              /**
-              * Initialize a new SafeFrames publisher configuration
-              */
-              (function() {
-                      var conf	= new $sf.host.Config({
-                              // Should be absolute path to render file hosted on CDN
-                              renderFile:		"http://sf.wanda.io/html/r.html",
-                              positions: {}
-                      });
-  
-              })();
             </script>
+            <script type='text/x-safeframe' class='sf_data' id="sf_tag_1a" >
+              {
+                "id": "ad2Leader",
+                "src": "http://ad.doubleclick.net/N3790/adj/iab.net;sz=728x90",
+                "conf": 
+                        {
+                          "size": "728x90",
+                          "dest": "top_leaderboard2"
+                        }
+              } 
+            </script>
+          
             <!-- Simple Example Ends ================================================== -->
             <!-- Expansion Example ================================================== -->
             <div class="page-header">
               <h1 id="sf-expansion-example">Expansion Example</h1>
             </div>
-          
+            
             <div class="row">&nbsp;</div>
             <p>Here is the rendered ad:</p>
-            <div id="expandingAdPlacement"></div>
-            <div class="row">&nbsp;</div>
+            
+            <div id="expandingAdExample"></div>
             
             <h2>How it works</h2>
             <p>
               This is the code on the publisher host which defines target div for the SafeFrame ad on this page:
             </p>
-            <pre>
-              <code>
-  &lt;div id="expandingAdPlacement"&gt;&lt;/div&gt;
-              </code>
-            </pre>
+            <pre>  &lt;div id="expandingAdExample" style="height:90px;"&gt;&lt;/div&gt;</pre>
             
             <p>This is the JSON object that contains the ad data:</p>
-            <pre>
-              <code>
-  &lt;script type='text/x-safeframe' class='sf_data' id="sf_tag_1" &gt;
-    {
-      "id": "expandingAdFrame",
-       // relative source is relative to the r.html bootstrap file
-      "src": "http://sf.wanda.io/js/lib/expandingAd.js",
-      "conf":
-          {
-            "w": 160,
-            "h": 600,
-            "dest": "expandingAdPlacement"
-          },
-      "meta":
-          {
-            "expand":
-            {
-              "x": "350",
-              "y": "0"
-            }
-          }
-    }
-  &lt;/script&gt;
-              </code>
-            </pre>
-          
-            <p>
-              Now include the SafeFrame configuration.
-            </p>
-            <pre>
-              <code>
-  &lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"&gt;&lt;/script&gt;
-  &lt;script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"&gt;&lt;/script&gt;
-  &lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"&gt;&lt;/script&gt;
-              </code>
-            </pre>
-            <p>
-              For expanding ads there is a javascript file that is called that needs to be hosted on the CDN
-            </p>
-            <pre>
-              <code>
-  &lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/expandingAd.js"&gt;&lt;/script&gt;
-              </code>
-            </pre>
-            <p>
-              Finally initialize SafeFrame
-            </p>
-            <pre>
-              <code>
-  &lt;script type="text/javascript"&gt;
-    /**
-    * Initialize a new SafeFrames publisher configuration
-    */
-    (function() {
-            var conf = new $sf.host.Config({
-                       // Should be absolute path to render file hosted on CDN
-                       renderFile : "http://sf.wanda.io/html/r.html",
-                       positions : {}
-            });
-    })();
-  &lt;/script&gt;
-              </code>
-            </pre>
-            <!-- type="text/x-safe-frame" -->
-            <!-- 
-            TAG based safe frames follow strict parsing rules imposed by window.JSON.parse.
-            Keys MUST be inside double quote marks.  Javascript allows a much looser syntax for JSON objects
-            -->
-            <script type='text/x-safeframe' class='sf_data' id="sf_tag_1" >
+            <pre>  &lt;script type='text/x-safeframe' class='sf_data' id="sf_tag_1" &gt;
+  {
+    "id": "expandingAdFrame",
+     // relative source is relative to the r.html bootstrap file
+    "src": "../js/lib/expandingAd.js",
+    "conf":
+      {
+        "w": "468",
+        "h": "90",
+        "dest": "expandingAdExample"
+      },
+    "meta":
+      {
+        "expand":
+        {
+          "x": "350",
+          "y": "0"
+        }
+      }
+  }
+  &lt;/script&gt;</pre>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                  Don't forget to configure and initialize SafeFrame at the foot of each page.
+                </a>
+              </div>
+              <div id="collapseTwo" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <pre>&lt;!-- SafeFrame js include files and script-->
+
+&lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js">&lt;/script>
+&lt;script type="text/javascript" src="http://sf.wanda.io/js/host/host.js">&lt;/script>
+&lt;script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js">&lt;/script>
+
+&lt;script type="text/javascript">
+  /**
+  * Initialize a new SafeFrames publisher configuration
+  */
+  (function() {
+      var conf = new $sf.host.Config({
+        // Should be absolute path to render file hosted on CDN
+        renderFile: "http://sf.wanda.io/html/r.html",
+        positions: {}
+      });
+  })();
+&lt;/script></pre>
+                  
+                  
+                </div>
+              </div>
+            </div>
+            
+            <script type='text/x-safeframe' class='sf_data' id="sf_tag_2">
               {
                 "id": "expandingAdFrame",
                  // relative source is relative to the r.html bootstrap file
-                "src": "http://sf.wanda.io/js/lib/expandingAd.js",
+                "src": "../js/lib/expandingAd.js",
                 "conf":
-                    {
-                      "w": 160,
-                      "h": 600,
-                      "dest": "expandingAdPlacement"
-                    },
+                  {
+                    "w": "468",
+                    "h": "92",
+                    "dest": "expandingAdExample"
+                  },
                 "meta":
+                  {
+                    "expand":
                     {
-                      "expand":
-                      {
-                        "x": "350",
-                        "y": "0"
-                      }
+                      "x": "100",
+                      "y": "500"
                     }
+                  }
               }
-            </script> 
-          
-            <!-- 
-            INCLUDES OF THE SAFEFRAMES FRAMEWORK 
-            These script files should be hosted on your CDN from a different 
-            top level domain from the host site.
-            -->
-            <script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"></script>
-            <script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"></script>
-            <script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"></script>
-            
-            <script type="text/javascript">
-              /**
-              * Initialize a new SafeFrames publisher configuration
-              */
-              (function() {
-                      var conf	= new $sf.host.Config({
-                              // Should be absolute path to render file hosted on CDN
-                              renderFile:		"http://sf.wanda.io/html/r.html",
-                              positions: {}
-                      });
-  
-              })();
             </script>
+          
             <!-- Expansion Example Ends ================================================== -->
           </div> <!-- bs-docs-section -->
         </div> <!-- col-md-9 -->
       </div>  <!-- row -->
     </div> <!-- container bs-docs-container -->
+    
+    <!-- SafeFrame js include files and script-->
+    
+    <script type="text/javascript" src="http://sf.wanda.io/js/lib/base.js"></script>
+    <script type="text/javascript" src="http://sf.wanda.io/js/host/host.js"></script>
+    <script type="text/javascript" src="http://sf.wanda.io/js/lib/boot.js"></script>
+    
+    <script type="text/javascript">
+      /**
+      * Initialize a new SafeFrames publisher configuration
+      */
+      (function() {
+              var conf	= new $sf.host.Config({
+                      // Should be absolute path to render file hosted on CDN
+                      renderFile: "http://sf.wanda.io/html/r.html",
+                      positions: {}
+              });
+
+      })();
+    </script>
+    
+    
+    
+    <!-- js include files for web page-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+    
     <!-- Analytics Code -->
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
