@@ -22,9 +22,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 /** @ignore */
 (function(win) {
 
-	var NULL						= null,
-		TRUE						= true,
-		FALSE						= false,
+  var
 		DEFAULT_RENDER_TIMEOUT		= 60000,
 		POS_ID_AUTO_PREFIX			= "sf_pos",
 		POS_REL_BOX_ID_PREFIX		= "sf_pos_rel_el",
@@ -112,7 +110,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		_max					= (M && M.max),
 		_min					= (M && M.min),
 		_round					= (M && M.round),
-		_rect					= NULL,
+		_rect					= null,
 		ParamHash				= (lang && lang.ParamHash),
 		dc						= (win && win[DOC]),
 		isIE					= (env && env.isIE),
@@ -129,15 +127,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		pending_ifrs			= {},
 		complete_ifrs			= {},
 		scroll_parents_attached	= {},
-		mgr_bounds_details		= FALSE,
-		canUseHTML5				= FALSE,
-		html5Bound				= FALSE,
-		win_events_attached		= FALSE,
+		mgr_bounds_details		= false,
+		canUseHTML5				= false,
+		html5Bound				= false,
+		win_events_attached		= false,
 		geom_update_timer		= 0,
-		current_status			= NULL,
-		msghostfb				= NULL,
-		flash_ver 				= NULL,
-		config					= NULL;
+		current_status			= null,
+		msghostfb				= null,
+		flash_ver 				= null,
+		config					= null;
 		
 	var flashActiveXVersions = [
 		"ShockwaveFlash.ShockwaveFlash.11",
@@ -180,16 +178,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	{
 		var me = this, pos_map, conf_pos_map, posID, pos_conf, pos_id, boot_up;
 
-		if (!arguments.length) return (config) ? _mix({}, config) : NULL;
+		if (!arguments.length) return (config) ? _mix({}, config) : null;
 
 		if (!(me instanceof Config)) return new Config(conf);
 
 		if (!conf) {
-			config = NULL;
-			return NULL;
+			config = null;
+			return null;
 		}
 		boot_up				= !!(config);
-		me.auto				= ("auto" in conf) ? _cbool(conf.auto) : TRUE;
+		me.auto				= ("auto" in conf) ? _cbool(conf.auto) : true;
 		me.cdn				= _cstr(conf.cdn);
 		me.debug			= _cbool(conf.debug);
 		me.root				= _cstr(conf.root);
@@ -267,7 +265,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			me.w		= _cnum(posIDorObj.w, 0);
 			me.h		= _cnum(posIDorObj.h, 0);
 			me.z		= _cnum(posIDorObj.z, 0);
-			me.supports = _mix({}, posIDorObj.supports || SUPPORTS_FEATURES, TRUE, TRUE, TRUE);
+			me.supports = _mix({}, posIDorObj.supports || SUPPORTS_FEATURES, true, true, true);
 
 			if (!me.w || !me.h) {
 				sz 	= _cstr(posIDorObj.size);
@@ -393,6 +391,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				obj.shared		= shared;
 				obj.non_shared	= non_shared;
 
+      //json.stringify
 			return obj.toString();
 		}
 
@@ -443,7 +442,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	* Get the falsh version number
 	*/
 	function _get_flash_version(){
-		if(flash_ver !== NULL){
+		if(flash_ver !== null){
 			return flash_ver;
 		}
 		
@@ -470,7 +469,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					break;
 					// "WIN 11,3,378,5"
 				}catch(err){
-					obj = NULL;
+					obj = null;
 					flash_ver = 0;
 					continue;
 				}
@@ -636,8 +635,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     function _isPX(val)
 	{
    		val = _cstr(val);
-   		if (val && val.search(/\D+/g) == -1) return TRUE;
-   		if (val && val.search(/px/gi) != -1) return TRUE;
+   		if (val && val.search(/\D+/g) == -1) return true;
+   		if (val && val.search(/px/gi) != -1) return true;
    	}
 
    	/**
@@ -847,7 +846,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     	var rect		= {t:0,l:0,r:0,b:0,w:0,h:0,z:0},
     		scrollTop	= 0,
     		scrollLeft	= 0,
-    		bCheck		= FALSE,
+    		bCheck		= false,
     		root		= _docNode(el),
     		scroll 		= _get_doc_scroll(el),
     		parentNode, w, h;
@@ -992,7 +991,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	function contains(element, needle)
 	{
-		var ret = FALSE, el_node_type = ((element && element[NODE_TYPE]) || -1), needle_node_type = ((needle && needle[NODE_TYPE]) || -1);
+		var ret = false, el_node_type = ((element && element[NODE_TYPE]) || -1), needle_node_type = ((needle && needle[NODE_TYPE]) || -1);
 
 		if (el_node_type == 1 && needle_node_type != -1) {
 			if (element[CONTAINS]) {
@@ -1002,7 +1001,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					while (needle)
 					{
 						if (element === needle) {
-							ret = TRUE;
+							ret = true;
 							break;
 						}
 						needle = needle.parentNode;
@@ -1042,7 +1041,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				}
 			} else {
 				try {
-					val = _view(el)[comp](el,NULL)[attr];
+					val = _view(el)[comp](el,null)[attr];
 				} catch (e) {
 					val = "";
 				}
@@ -1052,13 +1051,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				try {
 					val = el.currentStyle;
 				} catch (e) {
-					val = NULL;
+					val = null;
 				}
 			} else {
 				try {
-					val = _view(el)[comp](el,NULL);
+					val = _view(el)[comp](el,null);
 				} catch (e) {
-					val = NULL;
+					val = null;
 				}
 			}
 		}
@@ -1091,12 +1090,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     		exp_rect			= {t:0,l:0,r:0,b:0,xs:0,ys:0,xiv:0,yiv:0,iv:0,w:0,h:0},
     		xsb_h				= 0,
     		ysb_w				= 0,
-    		is_scroll_node		= FALSE,
-    		is_using_doc_root_r	= FALSE,
-    		is_using_doc_root_b	= FALSE,
+    		is_scroll_node		= false,
+    		is_using_doc_root_r	= false,
+    		is_using_doc_root_b	= false,
     		cur_st, w, h, t, l, r, b, scroll_width, offset_width, client_width,
     		scroll_height, offset_height, client_height,over_x_val, scroll_left, scroll_top,
-    		over_y_val, clip, x_hidden, y_hidden, ref_node, temp_rect, is_scroll_node = FALSE;
+    		over_y_val, clip, x_hidden, y_hidden, ref_node, temp_rect, is_scroll_node = false;
 
        	details = (details && typeof details == OBJ) ? details : {};
 
@@ -1149,13 +1148,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					if (over_x_val == SCROLL) {
 						ref_node 		= par;
 						xsb_h 			= offset_height-client_height;
-						is_scroll_node	= TRUE;
+						is_scroll_node	= true;
 					}
 
 					if (over_y_val == SCROLL) {
 						if (!ref_node) ref_node = par;
 						ysb_w = offset_width-client_width;
-						is_scroll_node	= TRUE;
+						is_scroll_node	= true;
 					}
 
 					if (over_x_val == AUTO) {
@@ -1164,14 +1163,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 							//scrolling is on
 							xsb_h = offset_height - client_height;
 						}
-						is_scroll_node	= TRUE;
+						is_scroll_node	= true;
 					}
 					if (over_y_val == AUTO) {
 						if (!ref_node) ref_node = par;
 						if (scroll_height > client_height) {
 							ysb_w = offset_width - client_width;
 						}
-						is_scroll_node	= TRUE;
+						is_scroll_node	= true;
 					}
 
 					if (ref_node) break;
@@ -1186,7 +1185,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 						w	  = (win.innerWidth || 0) || offset_width;
 						ysb_w = w - client_width;
 					}
-					is_scroll_node	= TRUE;
+					is_scroll_node	= true;
 				}
 				par = _par(par);
 				if (!par || par[NODE_TYPE] != 1) break;
@@ -1223,7 +1222,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	    			if (y_hidden) {
 	    				exp_rect.b	= 0;
 	    			} else {
-	    				is_using_doc_root_b	= TRUE;
+	    				is_using_doc_root_b	= true;
 	    				exp_rect.b			= _max( ((doc_rect.h-el_rect.h)-xsb_h)-el_rect.t, 0);
 	    			}
 	    		} else {
@@ -1234,7 +1233,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					if (x_hidden) {
 						exp_rect.r	= 0;
 					} else {
-						is_using_doc_root_r	= TRUE;
+						is_using_doc_root_r	= true;
 						exp_rect.r			= _max( ((doc_rect.w-el_rect.w)-ysb_w)-el_rect.l, 0);
 					}
 				} else {
@@ -1364,7 +1363,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				if (exp_rect.iv > .5) {
 	    			mgr_bounds_details		= details;
 	    			arOvrlaps				= overlaps(el,_cnum(check_3D,1,1));
-	    			mgr_bounds_details		= NULL;
+	    			mgr_bounds_details		= null;
 	    			len						= arOvrlaps[LEN];
 	    			el_w					= el_rect.w;
 	    			el_h					= el_rect.h,
@@ -1437,7 +1436,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		if (mgr_bounds_details) {
 			par_details = mgr_bounds_details;
 		} else {
-	    	bounds(el,par_details,TRUE);
+	    	bounds(el,par_details,true);
 	    }
 
     	ref_par_node = par_details.refNode;
@@ -1489,7 +1488,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		{
 			if (id.indexOf("geom_inter") == 0) {
 				checkEl = _elt(id);
-				if (checkEl) _attr(checkEl,"id",NULL);
+				if (checkEl) _attr(checkEl,"id",null);
 			}
 		}
 		return ret;
@@ -1538,7 +1537,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	function _check_html5_init(evt)
 	{
 		if (!canUseHTML5 && evt && evt.data == initID) {
-			canUseHTML5	= TRUE;
+			canUseHTML5	= true;
 			dom.evtCncl(evt);
 			dom[DETACH](win, MSG, _check_html5_init);
 		}
@@ -1568,13 +1567,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			dataGUID	= params && params[GUID],
 			pipeGUID	= pipe && pipe[GUID],
 			cb			= pipe && pipe._xmsgcb,
-			ret			= FALSE;
+			ret			= false;
 
 		if (pipeGUID && dataGUID && dataGUID == pipeGUID && msg_win && fr_win && fr_win == msg_win) {
 			try {
 				ret = cb(params.msg);
 			} catch (e) {
-				ret = FALSE;
+				ret = false;
 			}
 		}
 		if (ret) dom.evtCncl(evt);
@@ -1597,7 +1596,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	function send_msg_to_child_iframe(tgtID, data)
 	{
 		var pipe 	= tgtID && msg_pipes[tgtID],
-			success = FALSE,
+			success = false,
 			msgObj, w, el, e;
 
 		if (!pipe) {
@@ -1613,16 +1612,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					w		= _ifr_view(el);
 					try {
 						w[PMSG](_cstr(msgObj),pipe.srcHost || "*");
-						success = TRUE;
+						success = true;
 					} catch (e) {
-						success = FALSE;
+						success = false;
 					}
 				} else {
 					success = _call_xmsg_host_fb("send", tgtID, data);
 				}
 			}
 		}
-		msgObj = w = el = NULL;
+		msgObj = w = el = null;
 		return success;
 	}
 
@@ -1687,7 +1686,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	function prep_iframe_msging(attrs)
 	{
-		var pipe = NULL, iframeName, nameParams, src, srcHost, newPipe,
+		var pipe = null, iframeName, nameParams, src, srcHost, newPipe,
 			locStripped = _strippedEncodedLocation();
 
 
@@ -1747,7 +1746,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					pipe._xmsgcb		= cb;
 					if (!html5Bound) {
 						dom[ATTACH](win, MSG, _handle_msg_from_outside);
-						html5Bound = TRUE;
+						html5Bound = true;
 					}
 				} else {
 					_call_xmsg_host_fb(ATTACH,el,pipe,cb);
@@ -1772,8 +1771,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	{
 		var id		= _attr(el,"id"),
 			pipe	= id && msg_pipes[id],
-			w		= NULL,
-			empty	= TRUE;
+			w		= null,
+			empty	= true;
 
 		if (!pipe) {
 			_call_xmsg_host_fb(DETACH,el);
@@ -1781,8 +1780,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		}
 		if (pipe) {
 			pipe._xmsgcb	 =
-			msg_pipes[id] 	 = NULL;
-			pipe			 = NULL;
+			msg_pipes[id] 	 = null;
+			pipe			 = null;
 			delete msg_pipes[id];
 		}
 		id	= "";
@@ -1790,16 +1789,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		{
 			pipe = msg_pipes[id];
 			if (pipe && pipe[GUID]) {
-				empty = FALSE;
+				empty = false;
 				break;
 			}
 		}
 		if (empty && usingHTML5() && html5Bound) {
-			html5Bound	= FALSE;
+			html5Bound	= false;
 			dom[DETACH](win, MSG, _handle_msg_from_outside);
 		}
 
-		el = w = pipe = NULL;
+		el = w = pipe = null;
 	}
 
 	/* --END--SafeFrames publisher side dom msg host helper functions */
@@ -1820,7 +1819,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	{
 		var cb_args = [], args = arguments, len = args[LEN], 
 			idx = 0, f, 
-			ret = FALSE, 
+			ret = false, 
 			e, a;
 			
 		if (config) {
@@ -1834,9 +1833,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					}
 				}
 				try {
-					ret = f.apply(NULL,cb_args);
+					ret = f.apply(null,cb_args);
 				} catch (e) {
-					ret = FALSE;
+					ret = false;
 				}
 			}
 		}
@@ -1925,7 +1924,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     		id				= (params && params.dest);
     		ifr				= (id && _elt(id));
     		if (ifr && params) {
-    			g				= _build_geom(posID, ifr, TRUE);
+    			g				= _build_geom(posID, ifr, true);
     			msgObj			= ParamHash();
     			msgObj.pos		= posID;
     			msgObj.cmd		= NOTIFY_GEOM_UPDATE;
@@ -1965,7 +1964,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
     function _update_geom_win_scroll()
     {
-		_update_geom(TRUE);
+		_update_geom(true);
     }
 
 
@@ -1995,7 +1994,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					g, msgObj;
 
 				if (ifr && params) {
-					g				= _build_geom(posID, ifr, TRUE);
+					g				= _build_geom(posID, ifr, true);
 					msgObj			= ParamHash();
 	    			msgObj.pos		= posID;
 	    			msgObj.cmd		= NOTIFY_GEOM_UPDATE;
@@ -2068,12 +2067,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     				if (scr_handle.tID) clearTimeout(scr_handle.tID);
     				dom.detach(scroll_parents_attached[prop], SCROLL, scr_handle[ONSCROLL]);
     				scr_handle[ONSCROLL] 	=
-    				scr_handle.node			= NULL;
+    				scr_handle.node			= null;
     			}
-				scroll_parents_attached[prop] = NULL;
+				scroll_parents_attached[prop] = null;
 				delete scroll_parents_attached[prop];
 			}
-			win_events_attached	= FALSE;
+			win_events_attached	= false;
     	} catch (e) {
 
     	}
@@ -2094,56 +2093,56 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	function _handle_msg_evt(data)
 	{
-		var msgObj, ret = FALSE, info;
+		var msgObj, ret = false, info;
 
-		msgObj 	= ParamHash(data,NULL,NULL,TRUE,TRUE);
+		msgObj 	= ParamHash(data,null,null,true,true);
 		if (msgObj && msgObj.pos) {
 			info	= rendered_ifrs[msgObj.pos];
 			if (info) {
 				switch (msgObj.cmd)
 				{
 					case "exp-push":
-						_expand_safeframe(msgObj,TRUE);
-						ret = TRUE;
+						_expand_safeframe(msgObj,true);
+						ret = true;
 					break;
 					case "exp-ovr":
 						_expand_safeframe(msgObj);
-						ret = TRUE;
+						ret = true;
 					break;
 					case "collapse":
 						_collapse_safeframe(msgObj);
-						ret = TRUE;
+						ret = true;
 					break;
 					case "msg":
 						_fire_pub_callback(POS_MSG, msgObj.pos, "msg", msgObj.msg);
-						ret = TRUE;
+						ret = true;
 					break;
 					case ERROR_COMMAND:
 						_record_error(msgObj);
-						ret = TRUE;
+						ret = true;
 					break;
 					case NOTIFY_GEOM_UPDATE:
 						sf.lib.logger.log("Geom update complete: " + msgObj.pos);
-						ret = TRUE;
+						ret = true;
 					break;
 					case "read-cookie":
 						var canRead = info.conf && info.conf.supports && info.conf.supports[msgObj.cmd] && info.conf.supports[msgObj.cmd] != "0";
 						if(canRead){
 							_read_cookie(msgObj);
-							ret = TRUE;
+							ret = true;
 						}
 						else{
-							ret = FALSE;
+							ret = false;
 						}
 					break;
 					case "write-cookie":
 						var canWrite = info.conf && info.conf.supports && info.conf.supports[msgObj.cmd] && info.conf.supports[msgObj.cmd] != "0";
 						if(canWrite){
 							_write_cookie(msgObj);
-							ret = TRUE;
+							ret = true;
 						}
 						else{
-							ret = FALSE;
+							ret = false;
 						}
 					break;
 						
@@ -2165,11 +2164,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
     function _has_pending_renders()
     {
-    	var all_renders_done = TRUE, pos_id;
+    	var all_renders_done = true, pos_id;
 
     	for (pos_id in pending_ifrs)
     	{
-    		all_renders_done = FALSE;
+    		all_renders_done = false;
     		break;
     	}
     	return all_renders_done;
@@ -2202,7 +2201,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			if (id && msgObj) send_msg_to_child_iframe(id, msgObj.toString());
 			current_status = "";
 
-			msgObj = id = params = NULL;
+			msgObj = id = params = null;
 		}, XCOM_RESP_DELAY);
     }
 
@@ -2220,14 +2219,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
     function _handle_frame_load()
     {
-		var el = this, pos_id = dom.attr(el, "_pos_id"), all_renders_done = TRUE;
+		var el = this, pos_id = dom.attr(el, "_pos_id"), all_renders_done = true;
 
 		if (pending_ifrs[pos_id]) {
 			clearTimeout(pending_ifrs[pos_id]);
 			delete pending_ifrs[pos_id];
 			complete_ifrs[pos_id]	= pos_id;
-			dom.attr(el, "_pos_id", NULL);
-			dom.attr(el, "name", NULL);
+			dom.attr(el, "_pos_id", null);
+			dom.attr(el, "name", null);
 			el[ST].visibility 	= "inherit";
 			el[ST].display		= "block";
 			_fire_pub_callback("onEndPosRender", pos_id);
@@ -2283,7 +2282,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		var bounds, info = ParamHash(), details = {}, scr_handle, node, new_ref_node, ex, s, e;
 
         try {
-			bounds	= dom.bounds(dest,details,TRUE);
+			bounds	= dom.bounds(dest,details,true);
 
 			if (!dont_attach_scroll_evt && !details.isRoot && details.canScroll) {
 				ex				= details.expRect;
@@ -2294,8 +2293,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 					if (scr_handle && scr_handle.node != new_ref_node) {
 						if (scr_handle.tID) clearTimeout(scr_handle.tID);
 						dom.detach(node, SCROLL, scr_handle[ONSCROLL]);
-						scr_handle.node = scr_handle[ONSCROLL] 	= NULL;
-						scroll_parents_attached[posID] 		  	= NULL;
+						scr_handle.node = scr_handle[ONSCROLL] 	= null;
+						scroll_parents_attached[posID] 		  	= null;
 						delete scroll_parents_attached[posID];
 					}
 					if (!scroll_parents_attached[posID]) {
@@ -2313,7 +2312,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				}
 			}
 		} catch (e) {
-			info = NULL;
+			info = null;
 		}
 
 		try {
@@ -2334,7 +2333,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				info.self	= s;
 			}
 		} catch (e) {
-			info = NULL;
+			info = null;
 		}
 		return info;
 	}
@@ -2353,7 +2352,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	function _expand_safeframe(msgObj, push)
     {
-		var xn = FALSE, yn = FALSE, posID = (msgObj && msgObj.pos), params, params_conf, ifr, par, ifrSt, parSt,
+		var xn = false, yn = false, posID = (msgObj && msgObj.pos), params, params_conf, ifr, par, ifrSt, parSt,
 			orWd, orHt, dx, dy, nWd, nHt, id,t,l,r,b,exp,
 			z, delta, scr_handle;
 
@@ -2400,13 +2399,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			nHt		= _cnum(orHt + t + b,0,0);
 			if (t) {
 				dy  = t*-1;
-				yn  = TRUE;
+				yn  = true;
 			} else {
 				dy  = 0;
 			}
 			if (l) {
 				dx = l*-1;
-				xn = TRUE;
+				xn = true;
 			} else {
 				dx = 0;
 			}
@@ -2432,7 +2431,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		ifrSt.zIndex		= z;
 
         //Create Shim Iframe to avoid overlapping issues with controls in IE.
-		_shim_frame(id, TRUE, nWd, nHt, z-1);
+		_shim_frame(id, true, nWd, nHt, z-1);
 
 		if (push) {
         	parSt[WIDTH]  = nWd+PX;
@@ -2442,17 +2441,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
         	parSt[HEIGHT] = orHt+PX;
         }
 
-        params.expanded		= TRUE;
+        params.expanded		= true;
         msgObj.dx			= dx;
         msgObj.dy			= dy;
         msgObj.w			= nWd;
         msgObj.h			= nHt;
         msgObj.cmd			= "expand";
-       	msgObj.geom 		= _es(_build_geom(posID, ifr, TRUE));
+       	msgObj.geom 		= _es(_build_geom(posID, ifr, true));
 
 		_fire_pub_callback(POS_MSG, posID, EXPAND_COMMAND, dx ,dy);
 		_send_response(params, msgObj);
-		ifrSt = par = ifr = params = msgObj = NULL;
+		ifrSt = par = ifr = params = msgObj = null;
     }
 
     /**
@@ -2507,11 +2506,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		if (!noMsging) {
 			_fire_pub_callback(POS_MSG, posID, COLLAPSE_COMMAND, 0, 0);
 			msgObj.cmd  	= (isOutside) ? "collapsed" : "collapse";
-			msgObj.geom		= _es(_build_geom(posID, ifr, TRUE));
+			msgObj.geom		= _es(_build_geom(posID, ifr, true));
 			_send_response(params, msgObj);
 		}
 
-		ifr = ifrSt = par = parSt = params = msgObj = NULL;
+		ifr = ifrSt = par = parSt = params = msgObj = null;
     }
 	
 	
@@ -2610,11 +2609,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 		_fire_pub_callback(POS_MSG, command, posID, 0, 0);
 		msgObj.cmd  	=  command;
-		msgObj.geom		= _es(_build_geom(posID, ifr, TRUE));
+		msgObj.geom		= _es(_build_geom(posID, ifr, true));
 		msgObj.value = cookies[key];
 		_send_response(params, msgObj);
 
-		ifr = params = msgObj = NULL;
+		ifr = params = msgObj = null;
     }
 
 	
@@ -2663,12 +2662,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 		_fire_pub_callback(POS_MSG, command, posID, 0, 0);
 		msgObj.cmd  	=  command;
-		msgObj.geom		= _es(_build_geom(posID, ifr, TRUE));
+		msgObj.geom		= _es(_build_geom(posID, ifr, true));
 		msgObj.info 	= newValue;
 		msgObj.value = "";
 		_send_response(params, msgObj);
 
-		ifr = params = msgObj = NULL;
+		ifr = params = msgObj = null;
     }
 
 	
@@ -2685,7 +2684,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	function nuke()
 	{
-		var idx = 0, empty = TRUE, args = arguments, pos_id, pos, el_id, el, sb_rel, par;
+		var idx = 0, empty = true, args = arguments, pos_id, pos, el_id, el, sb_rel, par;
 
 		if (!args[LEN] || args[idx] == "*") {
 			args = [];
@@ -2720,7 +2719,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				if (sb_rel) dom.purge(sb_rel);
 
 
-				rendered_ifrs[pos_id] = NULL;
+				rendered_ifrs[pos_id] = null;
 				delete rendered_ifrs[pos_id];
 				el		= dom.make("div");
 				dom.attr(el,"id",el_id);
@@ -2730,7 +2729,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		pos_id = "";
 		for (pos_id in rendered_ifrs)
 		{
-			empty = FALSE;
+			empty = false;
 			break;
 		}
 		if (empty) {
@@ -2762,10 +2761,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		pos, pos_id, pos_conf, dest_el, new_dest_el, rel_el, par_el,
 		name_params, dest_id, dest_rel_id, css_txt, w, h, st, e, pend;
 
-		if (!config) return FALSE;
+		if (!config) return false;
 		if (!dom.ready()) {
-			dom.wait(function() { render.apply(NULL, args); args = NULL });
-			return NULL;
+			dom.wait(function() { render.apply(null, args); args = null });
+			return null;
 		}
 
 		/* if an array of positions is handed in use that instead */
@@ -2776,7 +2775,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		while (pos = args[idx++])
 		{
 			pos_id		= pos.id;
-			pos_conf	= (pos_id) ? config.positions[pos_id] : NULL;
+			pos_conf	= (pos_id) ? config.positions[pos_id] : null;
 
 			if (pos_conf) {
 				dest_id		= pos_conf.dest;
@@ -2837,7 +2836,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 							rel_el				= dom.make("div");
 							rel_el.id			= dest_rel_id;
 							rel_el.className	= "iab_sf";
-							new_dest_el			= dest_el.cloneNode(FALSE);
+							new_dest_el			= dest_el.cloneNode(false);
 							dom.css(new_dest_el, css_txt);
 							rel_el.appendChild(new_dest_el);
 							dom.css(rel_el, css_txt);
@@ -2868,7 +2867,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 							dom.attach(win, SCROLL, 	_handle_win_geom_scroll);
 							dom.attach(win, "resize", 	_handle_win_geom_resize);
 							dom.attach(win, "unload",	_handle_unload);
-							win_events_attached = TRUE;
+							win_events_attached = true;
 						}
 
 						iframes.replace({id: dest_id,name:name_params,src:config.renderFile,_pos_id: pos_id},css_txt, rel_el, _handle_frame_load, _handle_msg_evt);
@@ -2935,7 +2934,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				bounds:			bounds,
 				overlaps:		overlaps
 
-			}, lib, TRUE);
+			}, lib, true);
 
 			/** @ignore */
 			(function() {
@@ -2948,7 +2947,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 						detach:		detach_iframe_msging,
 						usingHTML5:	usingHTML5,
 						send:		send_msg_to_child_iframe
-					}, dom, TRUE);
+					}, dom, true);
 
 					dom[ATTACH](win,MSG,_check_html5_init);
 					initID			= "xdm-html5-init-" + _guid();
@@ -2973,7 +2972,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 				get: 		get,
 				render:		render,
 				status:		status
-			}, NULL, TRUE);
+			}, null, true);
 
 		}
 	}

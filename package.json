@@ -1,0 +1,20 @@
+{
+  "name": "viewability",
+  "version": "0.0.1",
+  "author": "Jason Fertel <jason@fer.tel>",
+  "description": "Ad viewability",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adjs/viewability"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*",
+    "phantom": "*",
+    "coffee-script": ">=1.7.1"
+  },
+  "scripts": {
+    "test": "mocha test"
+  }
+}

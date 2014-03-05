@@ -6,7 +6,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, "string"ICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
@@ -76,34 +76,24 @@ if (window["$sf"]) {
 	 *
 	*/
 
-	var q						= "?",
-		a						= "&",
-		eq						= "=",
-		OBJ						= "object",
-		FUNC					= "function",
-		STR						= "string",
-		NUM						= "number",
-		RP						= "replace",
-		LEN     				= "length",
-		DOC						= "document",
-		PROTO					= "prototype",
-		N     					= (win && win.Number),
-		M      					= (win && win.Math),
-		d						= (win && win[DOC]),
-		nav						= (win && win.navigator),
-		ua						= (nav && nav.userAgent) || "",
+	var
+		Number     					= (win && win.Number),
+		Math      					= (win && win.Math),
+		theDocument						= (win && win.document),
+		navigator						= (win && win.navigator),
+		userAgent						= (navigator && navigator.userAgent) || "",
 		TLC						= "toLowerCase",
 		GT						= "getAttribute",
 		ST						= "setAttribute",
 		RM						= "removeAttribute",
 		GTE						= "getElementsByTagName",
 		DCLDED					= "DOMContentLoaded",
-		S						= (win && win.String),
-		back_slash				= S.fromCharCode(92),
+		String 						= (win && win.String),
+		back_slash				= String.fromCharCode(92),
 		two_slashes				= back_slash+back_slash,
-		dbl_quote				= S.fromCharCode(34),
+		dbl_quote				= String.fromCharCode(34),
 		esc_dbl_quote			= back_slash+dbl_quote,
-		plus_char				= S.fromCharCode(43),
+		plus_char				= String.fromCharCode(43),
 		scrip_str				= 'scr'+dbl_quote+plus_char+dbl_quote+'ipt',
 		BLANK_URL				= "about:blank",
 		NODE_TYPE				= "nodeType",
@@ -115,14 +105,11 @@ if (window["$sf"]) {
 		w3c_detach				= "removeEventListener",
 		use_attach				= "",
 		use_detach				= "",
-		use_ie_old_attach		= FALSE,
+		use_ie_old_attach		= false,
 		IAB_LIB					= "$sf.lib",
 		IAB_ENV					= "$sf.env",
 		IAB_INF					= "$sf.info",
 		IE_GC_INTERVAL			= 3000,
-		TRUE					= true,
-		FALSE					= false,
-		NULL					= null,
 		EVT_CNCL_METHODS		=
 		{
 			"preventDefault": 				0,
@@ -130,19 +117,18 @@ if (window["$sf"]) {
 			"stopPropagation":				0,
 			"preventBubble":				0
 		},
-
-		NUM_MAX 					= (N && N.MAX_VALUE),
-		NUM_MIN 					= (-1 * NUM_MAX),
+		NUMBER_MAX 					= (Number && Number.MAX_VALUE),
+		NUMBER_MIN 					= (-1 * NUMBER_MAX),
 		_es     					= (win && win.escape),
 		_ue     					= (win && win.unescape),
 		isIE11 						= !(window.ActiveXObject) && "ActiveXObject" in window,
 		isIE						= !isIE11 && (win && ("ActiveXObject" in win)),
 		next_id						= 0,
-		useOldStyleAttrMethods		= FALSE,
+		useOldStyleAttrMethods		= false,
 		gc_timer_id					= 0,
-		dom_is_ready				= NULL,
+		dom_is_ready				= null,
 		dom_last_known_tag_count	= 0,
-		dom_last_known_child_node	= NULL,
+		dom_last_known_child_node	= null,
 		dom_ready_chk_max_tries		= 300,
 		dom_ready_chk_try_interval	= 50,
 		dom_ready_chk_tries			= 0,
@@ -151,8 +137,8 @@ if (window["$sf"]) {
 		iframe_cbs_attached			= {},
 		evt_tgt_prop_a				= "",
 		evt_tgt_prop_b				= "",
-		iframe_msg_host_lib			= NULL,
-		cached_ua					= NULL,
+		iframe_msg_host_lib			= null,
+		cached_ua					= null,
 
 
 		/* private function variable references, we have lang set these private variables so that the dom lib below can access them quickly */
@@ -206,10 +192,10 @@ if (window["$sf"]) {
 		function cstr(str)
 		{
 			var typ = typeof str;
-			if (typ == STR) return str;
-			if (typ == NUM && !str) return "0";
-			if (typ == OBJ && str && str.join) return str.join("");
-			return (str) ? S(str) : "";
+			if (typ == "string") return str;
+			if (typ == "number" && !str) return "0";
+			if (typ == "object" && str && str.join) return str.join("");
+			return (str) ? String(str) : "";
 		}
 
 		/**
@@ -229,7 +215,7 @@ if (window["$sf"]) {
 
 		function cbool(val)
 		{
-			return (!val || val == "0" || val == "false" || val == "no" || val == "undefined" || val == "null") ? FALSE : TRUE;
+			return (!val || val == "0" || val == "false" || val == "no" || val == "undefined" || val == "null") ? false : true;
 		}
 
 
@@ -255,22 +241,22 @@ if (window["$sf"]) {
 		{
 			var e;
 
-			if (typeof val != NUM)  {
+			if (typeof val != "number")  {
 				try {
 					if (!val) {
-						val = N.NaN;
+						val = Number.NaN;
 					} else {
 						val = parseFloat(val);
 					}
 				} catch (e) {
-					val = N.NaN;
+					val = Number.NaN;
 				}
 			}
 
-			if (maxVal == NULL)	{ maxVal = NUM_MAX; }
-			if (minVal == NULL)	{ minVal = NUM_MIN; }
+			if (maxVal == null)	{ maxVal = NUMBER_MAX; }
+			if (minVal == null)	{ minVal = NUMBER_MIN; }
 
-			return ((isNaN(val) || val < minVal || val > maxVal) && defVal != NULL) ? defVal : val;
+			return ((isNaN(val) || val < minVal || val > maxVal) && defVal != null) ? defVal : val;
 		}
 
 		/**
@@ -296,9 +282,9 @@ if (window["$sf"]) {
 			var e;
 
 			try {
-				f = (f && typeof f == FUNC && f.toString() && (new f.constructor())) ? f : NULL;
+				f = (f && typeof f == "function" && f.toString() && (new f.constructor())) ? f : null;
 			} catch (e) {
-				f = NULL;
+				f = null;
 			}
 			return !!(f);
 		}
@@ -352,8 +338,8 @@ if (window["$sf"]) {
 				typ  = typeof item;
 				if (owned && !s.hasOwnProperty(p)) continue;
 				if (no_ovr && (p in r)) continue;
-				if (skipFuncs && typ == FUNC) continue;
-				if (typ == OBJ && item) {
+				if (skipFuncs && typ == "function") continue;
+				if (typ == "object" && item) {
 					if (item.slice) {
 						item = mix([],item);
 					} else {
@@ -392,7 +378,7 @@ if (window["$sf"]) {
 		 *
 		*/
 
-		function rand() { return M.round(M.random()*100); }
+		function rand() { return Math.round(Math.random()*100); }
 
 
 		/**
@@ -413,7 +399,7 @@ if (window["$sf"]) {
 		{
 			var ret = cstr(str);
 
-			return (ret && ret[RP](/^\s\s*/, '')[RP](/\s\s*$/, ''));
+			return (ret && ret.replace(/^\s\s*/, '').replace(/\s\s*$/, ''));
 		};
 
 		/**
@@ -434,23 +420,23 @@ if (window["$sf"]) {
 
 		function def(str_ns, aug, root,no_ovr)
 		{
-			var obj = (root && typeof root == OBJ) ? root : win,
+			var obj = (root && typeof root == "object") ? root : win,
 				idx = 0,
 				per = ".",
-				ret = NULL,
+				ret = null,
 				ar, item;
 
 			if (str_ns) {
 				str_ns 	= cstr(str_ns);
-				aug 	= (aug && typeof aug == OBJ)  ? aug : NULL;
+				aug 	= (aug && typeof aug == "object")  ? aug : null;
 				if (str_ns.indexOf(per)) {
 					ar = str_ns.split(per);
 					while (item = ar[idx++])
 					{
 						item 		= trim(item);
-						if (idx == ar[LEN]) {
+						if (idx == ar.length) {
 							if (obj[item] && aug) {
-								ret = obj[item] = mix(obj[item],aug,FALSE,NULL,no_ovr);
+								ret = obj[item] = mix(obj[item],aug,false,null,no_ovr);
 							} else {
 								if (no_ovr && (item in obj)) {
 									ret = obj[item];
@@ -469,7 +455,7 @@ if (window["$sf"]) {
 					}
 				} else {
 					if (obj[str_ns] && aug) {
-						ret = obj[str_ns] = mix(obj[str_ns], aug,FALSE,NULL,no_ovr);
+						ret = obj[str_ns] = mix(obj[str_ns], aug,false,null,no_ovr);
 					} else {
 						ret = obj[str_ns] = obj[str_ns] || aug || {};
 					}
@@ -502,7 +488,7 @@ if (window["$sf"]) {
 				exp4 	= /\./gm,
 				idx 	= 0,
 				rootStr	= "",
-				exists	= TRUE,
+				exists	= true,
 				obj, matches, prop;
 
 
@@ -514,13 +500,13 @@ if (window["$sf"]) {
 					str_ns	= trim(str_ns);
 					matches	= str_ns.match(exp);
 					if (matches) {
-						rootStr	= str_ns[RP](exp3, "");
+						rootStr	= str_ns.replace(exp3, "");
 						matches.unshift(rootStr);
 						while (prop = matches[idx++])
 						{
-							prop = prop[RP](exp2, "$3")[RP](exp4, "");
+							prop = prop.replace(exp2, "$3").replace(exp4, "");
 							if (!obj[prop]) {
-								exists = FALSE;
+								exists = false;
 								break;
 							}
 							obj 	= obj[prop];
@@ -530,12 +516,12 @@ if (window["$sf"]) {
 						obj	 = obj[prop];
 					}
 				} else {
-					exists = FALSE;
+					exists = false;
 				}
 			} else {
-				exists = FALSE;
+				exists = false;
 			}
-			return (exists && obj) || FALSE;
+			return (exists && obj) || false;
 		}
 
 
@@ -650,7 +636,7 @@ if (window["$sf"]) {
 			}
 			return new_str;
 		}
-
+                      //todo refactor this to json
 
 		/**
 		 * @class Intantiable class used to convert a delimited string into an object.<br />
@@ -715,21 +701,21 @@ if (window["$sf"]) {
 	    */
 		function ParamHash(sString, sPropDelim, sValueDelim, bNoOverwrite, bRecurse)
 		{
-			var idx, idx2, idx3, sTemp, sTemp2, sTemp3, me = this, pairs, nv, nm, added, cnt, io="indexOf",ss="substring", doAdd = FALSE, obj, len, len2;
+			var idx, idx2, idx3, sTemp, sTemp2, sTemp3, me = this, pairs, nv, nm, added, cnt, io="indexOf",ss="substring", doAdd = false, obj, len, len2;
 
 			if (!(me instanceof ParamHash)) return new ParamHash(sString, sPropDelim, sValueDelim, bNoOverwrite,bRecurse);
-			if (!arguments[LEN]) return me;
+			if (!arguments.length) return me;
 
-			if (sString && typeof sString == OBJ) return mix(new ParamHash("",sPropDelim,sValueDelim,bNoOverwrite,bRecurse),sString);
+			if (sString && typeof sString == "object") return mix(new ParamHash("",sPropDelim,sValueDelim,bNoOverwrite,bRecurse),sString);
 
 			sString 	= cstr(sString);
-			sPropDelim	= cstr(sPropDelim) || a;
-			sValueDelim	= cstr(sValueDelim) || eq;
+			sPropDelim	= cstr(sPropDelim) || "&";
+			sValueDelim	= cstr(sValueDelim) || "=";
 
 			if (!sString) return me;
-			if (sPropDelim != q && sValueDelim != q && sString.charAt(0) == q) sString = sString[ss](1);
+			if (sPropDelim != "?" && sValueDelim != "?" && sString.charAt(0) == "?") sString = sString[ss](1);
 
-			idx  = sString[io](q);
+			idx  = sString[io]("?");
 			idx2 = sString[io](sValueDelim);
 
 			if (idx != -1 && idx2 != -1 && idx > idx2) {
@@ -748,8 +734,8 @@ if (window["$sf"]) {
 			while (cnt--)
 			{
 				sTemp	= pairs[idx++];
-				added	= FALSE;
-				doAdd	= FALSE;
+				added	= false;
+				doAdd	= false;
 				if (sTemp) {
 					nv	= sTemp.split(sValueDelim);
 					len	= nv[LEN];
@@ -786,23 +772,23 @@ if (window["$sf"]) {
 						} else {
 							sTemp	= _ue(nv.join(sValueDelim));
 						}
-						doAdd	= TRUE;
+						doAdd	= true;
 					} else if (len == 2) {
 						nm		= _ue(nv[0]);
 						sTemp	= _ue(nv[1]);
-						doAdd	= TRUE;
+						doAdd	= true;
 					}
 					if (doAdd) {
 						if (bNoOverwrite) {
 							if (!(nm in me)) {
 								me[nm] = sTemp
-								added	 = TRUE;
+								added	 = true;
 							};
 						} else {
 							me[nm]	= sTemp;
-							added		= TRUE;
+							added		= true;
 						};
-						if (bRecurse && added && nm && sTemp && typeof sTemp != OBJ && (sTemp[io](sPropDelim) >= 0 || sTemp[io](sValueDelim) >= 0)) {
+						if (bRecurse && added && nm && sTemp && typeof sTemp != "object" && (sTemp[io](sPropDelim) >= 0 || sTemp[io](sValueDelim) >= 0)) {
 							me[nm] = new ParamHash(sTemp, sPropDelim, sValueDelim, bNoOverwrite, bRecurse);
 						}
 					}
@@ -810,7 +796,7 @@ if (window["$sf"]) {
 			};
 		}
 
-		proto = ParamHash[PROTO];
+		proto = ParamHash.prototype;
 
 		/*
 		 * This internal function is used for the valueOf / toString methods of our ParamHash class.
@@ -836,16 +822,16 @@ if (window["$sf"]) {
 		{
 			var prop, buffer = [], me = this, itemType, item;
 
-			sPropDelim 	= sPropDelim || a;
-			sValueDelim	= sValueDelim || eq;
+			sPropDelim 	= sPropDelim || "&";
+			sValueDelim	= sValueDelim || "=";
 
 			for (prop in me)
 			{
 				item		= me[prop];
 				itemType	= typeof item;
 
-				if (item && itemType == FUNC) continue;
-				if (item && itemType == OBJ) {
+				if (item && itemType == "function") continue;
+				if (item && itemType == "object") {
 					item = toString.apply(item, [sPropDelim,sValueDelim,escapeProp,dontEscapeValue]);
 				}
 				if (escapeProp) prop = _es(prop);
@@ -947,7 +933,7 @@ if (window["$sf"]) {
 		{
 			var m = str && str.match(regEx);
 
-			return (idx == NULL) ? m : ((m && m[idx]) || NULL);
+			return (idx == null) ? m : ((m && m[idx]) || null);
 		}
 
 		/**
@@ -1024,12 +1010,12 @@ if (window["$sf"]) {
 
 			ret.mobile	=
 			ret.ios		=
-			ret.os		= NULL;
+			ret.os		= null;
 			ret.accel 	= false;
 
-			ret.caja	= nav && nav.cajaVersion;
-			ret.cks		= FALSE;
-			subUA		= subUA || ua || "";
+			ret.caja	= navigator && navigator.cajaVersion;
+			ret.cks		= false;
+			subUA		= subUA || userAgent || "";
 
 			if (subUA) {
 		        if (_testIt(/windows|win32/i,subUA)) {
@@ -1082,7 +1068,7 @@ if (window["$sf"]) {
 
 		                match 		= _matchIt(subUA,/iPad|iPod|iPhone/,0);
 		                if (match) {
-		                	ret[match[TLC]()] = ret.ios;
+		                	ret[match.toLowerCase()] = ret.ios;
 		                }
 
 		            } else {
@@ -1167,14 +1153,14 @@ if (window["$sf"]) {
 
 	        try {
         		date.setTime(date.getTime() + 1000);
-        		d.cookie = cstr(["sf_ck_tst=test; expires=", date.toGMTString(), "; path=/"]);
-        		if (d.cookie.indexOf("sf_ck_tst") != -1) ret.cks = TRUE;
+        		theDocument.cookie = cstr(["sf_ck_tst=test; expires=", date.toGMTString(), "; path=/"]);
+        		if (theDocument.cookie.indexOf("sf_ck_tst") != -1) ret.cks = true;
 	        } catch (e) {
-	        	ret.cks = FALSE;
+	        	ret.cks = false;
 	        }
 
 			try {
-		        if (typeof process == OBJ) {
+		        if (typeof process == "object") {
 
 		            if (process.versions && process.versions.node) {
 		                //NodeJS
@@ -1350,7 +1336,7 @@ if (window["$sf"]) {
 
     	cached_ua			= parse_ua();
     	cached_ua.parse		= parse_ua;
-    	lang.def(IAB_ENV + ".ua", cached_ua, NULL, TRUE);
+    	lang.def(IAB_ENV + ".ua", cached_ua, null, true);
 
 
 	})();
@@ -1388,8 +1374,8 @@ if (window["$sf"]) {
 		function _handle_dom_load_evt(evt)
 		{
 			detach(win, "load", _handle_dom_load_evt);
-			detach(win, DCLDED, _handle_dom_load_evt);
-			dom_is_ready = TRUE;
+			detach(win, "DOMContentLoaded", _handle_dom_load_evt);
+			dom_is_ready = true;
 		}
 
 	   	/**
@@ -1417,23 +1403,23 @@ if (window["$sf"]) {
 			_clear_ready_timer_check();
 
 			if (dom_ready_chk_tries >= dom_ready_chk_max_tries) {
-				dom_last_known_child_node	= NULL;
-				dom_is_ready 				= TRUE;
+				dom_last_known_child_node	= null;
+				dom_is_ready 				= true;
 			}
-			if (dom_is_ready === NULL) {
+			if (dom_is_ready === null) {
 				try {
-					b 				= (d && d.body);
+					b 				= (theDocument && theDocument.body);
 					kids			= (b && tags("*",b));
 					tag_cnt			= (kids && kids[LEN]);
 					lst				= (b && b.lastChild);
 				} catch (e) {
 					dom_last_known_tag_count 	= 0;
-					dom_last_known_child_node	= NULL;
+					dom_last_known_child_node	= null;
 				}
 
 				if (dom_last_known_tag_count && tag_cnt == dom_last_known_tag_count && lst == dom_last_known_child_node) {
-					dom_last_known_child_node 	= NULL;
-					dom_is_ready 				= TRUE;
+					dom_last_known_child_node 	= null;
+					dom_is_ready 				= true;
 				} else {
 					dom_last_known_tag_count 	= tag_cnt;
 					dom_last_known_child_node	= lst;
@@ -1441,7 +1427,7 @@ if (window["$sf"]) {
 					dom_ready_chk_timer_id		= setTimeout(_ready_state_check, dom_ready_chk_try_interval);
 				}
 			} else {
-				dom_last_known_child_node 	= NULL;
+				dom_last_known_child_node 	= null;
 			}
 		}
 
@@ -1463,7 +1449,7 @@ if (window["$sf"]) {
 			oldCB = (id && iframe_cbs_attached[id]);
 			if (oldCB) {
 				detach(el, "load", oldCB);
-				iframe_cbs_attached[id] = NULL;
+				iframe_cbs_attached[id] = null;
 				delete iframe_cbs_attached[id];
 			}
 		}
@@ -1505,7 +1491,7 @@ if (window["$sf"]) {
 						} catch (e) { }
 					}
 
-					tgt = el = cb = newCB = id = NULL;
+					tgt = el = cb = newCB = id = null;
 				};
 
 				id = attr(el,"id");
@@ -1515,7 +1501,7 @@ if (window["$sf"]) {
 				attach(el, "load", newCB);
 			}
 
-			newCB = NULL;
+			newCB = null;
 		}
 
 		/**
@@ -1533,7 +1519,7 @@ if (window["$sf"]) {
 
 		function _byID(el)
 		{
-			return (el && typeof el == STR) ? elt(el) || el : el;
+			return (el && typeof el == "string") ? elt(el) || el : el;
 		}
 
 		/**
@@ -1557,7 +1543,7 @@ if (window["$sf"]) {
 			try {
 				if (!iframe_msg_host_lib) iframe_msg_host_lib = dom.msghost;
 			} catch (e) {
-				iframe_msg_host_lib = NULL;
+				iframe_msg_host_lib = null;
 			}
 
 			if (win != top) return;
@@ -1581,17 +1567,17 @@ if (window["$sf"]) {
 
 		function doc(el)
 		{
-			var d = NULL;
+			var d = null;
 			try {
 				if (el) {
-					if (el[NODE_TYPE] == 9) {
+					if (el.nodeType == 9) {
 						d = el;
 					} else {
-						d = el[DOC] || el.ownerDocument || NULL;
+						d = el.document || el.ownerDocument || null;
 					}
 				}
 			} catch (e) {
-				d = NULL;
+				d = null;
 			}
 			return d;
 		}
@@ -1612,18 +1598,18 @@ if (window["$sf"]) {
 
 		function view(el)
 		{
-			var w = NULL, d, prop1 = "parentWindow", prop2 = "defaultView";
+			var w = null, d, prop1 = "parentWindow", prop2 = "defaultView";
 
 			try {
 				if (el) {
-					w = el[prop1] || el[prop2] || NULL;
+					w = el[prop1] || el[prop2] || null;
 					if (!w) {
 						d = doc(el);
-						w = (d && (d[prop1] || d[prop2])) || NULL;
+						w = (d && (d[prop1] || d[prop2])) || null;
 					}
 				}
 			} catch (e) {
-				w = NULL;
+				w = null;
 			}
 			return w;
 		}
@@ -1644,13 +1630,13 @@ if (window["$sf"]) {
 
 		function elt (id)
 		{
-			var args = arguments, len = args[LEN], dc;
+			var args = arguments, len = args.length, dc;
 			if (len > 1) {
 				dc = doc(args[1]);
 			} else {
-				dc = d;
+				dc = theDocument;
 			}
-			return (dc && dc.getElementById(id)) || NULL;
+			return (dc && dc.getElementById(id)) || null;
 		}
 
 		/**
@@ -1662,13 +1648,13 @@ if (window["$sf"]) {
 		 * @public
 		 * @function
 		 * @param {HTMLElement} el The HTML element for which to get the tag name.
-		 * @return {String} The tag name in all lower case of an HTML element, if it cannot be successfully retrieved, alwasys returns an empty string (which will evaluate to FALSE).
+		 * @return {String} The tag name in all lower case of an HTML element, if it cannot be successfully retrieved, alwasys returns an empty string (which will evaluate to false).
 		 *
 		*/
 
 		function tagName(el)
 		{
-			return (el && el[NODE_TYPE] == 1 && el.tagName[TLC]()) || "";
+			return (el && el.nodeType == 1 && el.tagName.toLowerCase()) || "";
 		}
 
 		/**
@@ -1690,10 +1676,10 @@ if (window["$sf"]) {
 			var ret = [], e;
 
 			try {
-				if (parNode && parNode[GTE]) {
-					ret = parNode[GTE](name) || ret;
+				if (parNode && parNode.getElementsByTagName) {
+					ret = parNode.getElementsByTagName(name) || ret;
 				} else {
-					ret = d[GTE](name) || ret;
+					ret = theDocument.getElementsByTagName(name) || ret;
 				}
 			} catch (e) {
 				ret = [];
@@ -1743,30 +1729,30 @@ if (window["$sf"]) {
 		{
 			var e;
 			try {
-				if (arguments[LEN] > 2) {
-					if (attrVal === NULL) {
+				if (arguments.length > 2) {
+					if (attrVal === null) {
 						if (useOldStyleAttrMethods) {
-							el[RM](attrName, 0);
+							el.removeAttribute(attrName, 0);
 						} else {
-							el[RM](attrName);
+							el.removeAttribute(attrName);
 						}
 					} else {
 						attrVal = _cstr(attrVal);
-						if (attrName[TLC]() == "class") {
+						if (attrName.toLowerCase() == "class") {
 							el.className = attrVal;
 						} else {
 							if (useOldStyleAttrMethods) {
-								el[ST](attrName, attrVal, 0);
+								el.setAttribute(attrName, attrVal, 0);
 							} else {
-								el[ST](attrName, attrVal);
+								el.setAttribute(attrName, attrVal);
 							}
 						}
 					}
 				} else {
 					if (useOldStyleAttrMethods) {
-						attrVal = _cstr(el[GT](attrName, 0));
+						attrVal = _cstr(el.getAttribute(attrName, 0));
 					} else {
-						attrVal = _cstr(el[GT](attrName));
+						attrVal = _cstr(el.getAttribute(attrName));
 					}
 				}
 			} catch (e) {
@@ -1795,7 +1781,7 @@ if (window["$sf"]) {
 			try {
 				st	= el.style;
 
-				if (arguments[LEN] > 1) {
+				if (arguments.length > 1) {
 					st.cssText = _cstr(val);
 				} else {
 					val = st.cssText;
@@ -1822,7 +1808,7 @@ if (window["$sf"]) {
 
 		function make_element(tagName, par)
 		{
-			return ((arguments[LEN]>1 && doc(par)) || d).createElement(tagName);
+			return ((arguments.length >1 && doc(par)) || theDocument).createElement(tagName);
 		}
 
 
@@ -1836,17 +1822,17 @@ if (window["$sf"]) {
 		 * @function
 		 * @param {HTMLElement} parNode the HTML element to manipulate
 		 * @param {HTMLElement} child (Required) the new HTML element to add to the parent
-		 * return {HTMLElement|Boolean} the new reference to the child element that was appended, or FALSE if failure
+		 * return {HTMLElement|Boolean} the new reference to the child element that was appended, or false if failure
 		 *
 		*/
 
 		function append(parNode,child)
 		{
-			var success = FALSE, e;
+			var success = false, e;
 			try {
 				if (parNode) success = parNode.appendChild(child);
 			} catch (e) {
-				success = FALSE;
+				success = false;
 			}
 			return success;
 		}
@@ -1868,7 +1854,7 @@ if (window["$sf"]) {
 
 		function purge(node)
 		{
-			var success = FALSE, parNode, isIFrame = (tagName(node) == IFRAME), e;
+			var success = false, parNode, isIFrame = (tagName(node) == IFRAME), e;
 
 			if (isIFrame) {
 				/*
@@ -1896,7 +1882,7 @@ if (window["$sf"]) {
 				parNode = par(node);
 				if (parNode) {
 					parNode.removeChild(node);
-					success = TRUE;
+					success = true;
 
 					/*
 					 * Since we can't set the "src" attribute for IE,
@@ -1907,7 +1893,7 @@ if (window["$sf"]) {
 				}
 			} catch (e) { }
 
-			node = parNode = NULL;
+			node = parNode = null;
 			return success;
 		}
 
@@ -1946,12 +1932,12 @@ if (window["$sf"]) {
 				if (use_ie_old_attach) {
 					obj[use_attach]("on"+name,cb);
 				} else {
-					obj[use_attach](name,cb,FALSE);
+					obj[use_attach](name,cb,false);
 				}
 			} catch (e) {
 
 			}
-			obj = cb = NULL;
+			obj = cb = null;
 		}
 
 		/**
@@ -1974,12 +1960,12 @@ if (window["$sf"]) {
 				if (use_ie_old_attach) {
 					obj.detachEvent("on"+name, cb);
 				} else {
-					obj.removeEventListener(name, cb, FALSE);
+					obj.removeEventListener(name, cb, false);
 				}
 			} catch (e) {
 
 			}
-			obj = cb = NULL;
+			obj = cb = null;
 		}
 
 		/**
@@ -2001,18 +1987,18 @@ if (window["$sf"]) {
 			_clear_ready_timer_check();
 
 			if (dom_is_ready) {
-				dom_last_known_child_node = NULL;
-				return TRUE;
+				dom_last_known_child_node = null;
+				return true;
 			}
 
-			rs = d.readyState;
+			rs = theDocument.readyState;
 
 			if (rs) {
-				dom_last_known_child_node = NULL;
+				dom_last_known_child_node = null;
 				if (rs == "loaded" || rs == "complete") {
-					dom_is_ready = TRUE;
+					dom_is_ready = true;
 				} else {
-					dom_is_ready = FALSE;
+					dom_is_ready = false;
 				}
 			}
 
@@ -2022,7 +2008,7 @@ if (window["$sf"]) {
 			 *
 			*/
 
-			dom_last_known_child_node	= NULL;
+			dom_last_known_child_node	= null;
 			dom_ready_chk_tries			=
 			dom_last_known_tag_count	= 0;
 			_ready_state_check();
@@ -2051,11 +2037,11 @@ if (window["$sf"]) {
 				try {
 					if (lang.callable(cb)) cb();
 				} catch (e) {
-					e = NULL;
+					e = null;
 				}
 				return;
 			}
-			setTimeout(function() { wait(cb); cb = NULL; }, dom_ready_chk_try_interval+1);
+			setTimeout(function() { wait(cb); cb = null; }, dom_ready_chk_try_interval+1);
 		}
 
 
@@ -2083,13 +2069,13 @@ if (window["$sf"]) {
 				   take place so that we can cancel things
 				*/
 				try {
-					evt.returnValue = FALSE;
+					evt.returnValue = false;
 				} catch (e) { }
 				try {
-					evt.cancelBubble = TRUE;
+					evt.cancelBubble = true;
 				} catch (e) {  };
 				try {
-					evt.stopped		 = TRUE; //custom
+					evt.stopped		 = true; //custom
 				} catch (e) { };
 
 				for (prop in EVT_CNCL_METHODS)
@@ -2101,7 +2087,7 @@ if (window["$sf"]) {
 					}
 				}
 			}
-			return FALSE;
+			return false;
 		}
 
 		/**
@@ -2118,13 +2104,13 @@ if (window["$sf"]) {
 
 		function evtTgt(evt)
 		{
-			var tgt = NULL;
+			var tgt = null;
 
 			try {
 				evt = evt || win.event;
-				tgt = (evt) ?  (evt[evt_tgt_prop_a] || evt[evt_tgt_prop_b]) : NULL;
+				tgt = (evt) ?  (evt[evt_tgt_prop_a] || evt[evt_tgt_prop_b]) : null;
 			} catch (e) {
-				tgt = NULL;
+				tgt = null;
 			}
 			return tgt;
 		}
@@ -2154,7 +2140,7 @@ if (window["$sf"]) {
 		 * @param {String} [cssText]  The style string (as in what you would use in HTML markup, e.g. "background-color:red;border:solid 3px blue;"), to use for this iframe
 		 * @param {Function} [cb]  An optional callback function to specify for when the iframe loads.
 		 * @param {Function} [xmsgCB] An optional call back for receiving messages from the iframe
-		 * @return {HTMLElement}  the iframe node if succesfully created or NULL.  Note that this does not insert the iframe into the document for you. . .
+		 * @return {HTMLElement}  the iframe node if succesfully created or null.  Note that this does not insert the iframe into the document for you. . .
 		 *
 		*/
 		function clone_iframe(el, attrs, cssText, cb, xmsgCB)
@@ -2172,21 +2158,21 @@ if (window["$sf"]) {
 
 			if (!iframe_skip_clone) {
 				el 		= _byID(el);
-				if (tagName(el) != IFRAME) return NULL;
+				if (tagName(el) != IFRAME) return null;
 
-				cl 			= el.cloneNode(FALSE);
+				cl 			= el.cloneNode(false);
 			} else {
 				cl = el;
 			}
 			attrs		= attrs || {};
 
 			if ("src" in attrs) {
-				attr(cl,"src",NULL);
+				attr(cl,"src",null);
 			} else {
 				attrs.src = attr(el,"src") || BLANK_URL;
 			}
 			if ("name" in attrs) {
-				attr(cl,"name",NULL);
+				attr(cl,"name",null);
 			} else {
 				attrs.name = attr(el,"name");
 			}
@@ -2195,15 +2181,15 @@ if (window["$sf"]) {
 			xmsgPipe = xmsgCB && _call_xmsg_host("prep",attrs);
 
 			if (!iframe_skip_clone) {
-				attr(cl,"width",	NULL);
-				attr(cl,"height",	NULL);
+				attr(cl,"width",	null);
+				attr(cl,"height",	null);
 			}
 
 			if (cssText) {
 				//Lucky for us that duplicate style props will override each other so long as i put mine after. .
 
 				temp = css(cl);
-				if (temp && temp.charAt(temp[LEN]-1) != ";")
+				if (temp && temp.charAt(temp.length -1) != ";")
 					temp += ";";
 
 				css(cl, [temp,_cstr(cssText)]);
@@ -2233,8 +2219,8 @@ if (window["$sf"]) {
 
 			attr(newCl,"FRAMEBORDER","no");
 			attr(newCl,"SCROLLING","no");
-			attr(newCl,"ALLOWTRANSPARENCY",TRUE);
-			attr(newCl,"HIDEFOCUS",TRUE);
+			attr(newCl,"ALLOWTRANSPARENCY",true);
+			attr(newCl,"HIDEFOCUS",true);
 			attr(newCl,"TABINDEX",-1);
 			attr(newCl,"MARGINWIDTH",0);
 			attr(newCl,"MARGINHEIGHT",0);
@@ -2260,13 +2246,13 @@ if (window["$sf"]) {
 		 * @param {String} [cssText]  The style string (as in what you would use in HTML markup, e.g. "background-color:red;border:solid 3px blue;"), to use for this iframe
 		 * @param {Function} [cb]  An callback function to specify for when the iframe loads.
 		 * @param {Function} [xmsgCB] An call back for receiving messages from the iframe
-		 * @return {HTMLElement}  the iframe node if succesfully created or NULL.  Note that this does not insert the iframe into the document for you. . .
+		 * @return {HTMLElement}  the iframe node if succesfully created or null.  Note that this does not insert the iframe into the document for you. . .
 		 *
 		*/
 
 		function make_iframe(attrs, cssText, cb, xmsgCB)
 		{
-			return _clone_iframe(make_element(IFRAME), attrs, cssText, cb, xmsgCB, TRUE);
+			return _clone_iframe(make_element(IFRAME), attrs, cssText, cb, xmsgCB, true);
 		}
 
 		/**
@@ -2293,7 +2279,7 @@ if (window["$sf"]) {
 		 * @param {Function} [cb]  An callback function to specify for when the iframe loads.
 		 * @param {Function} [xmsgCB] An call back for receiving messages from the iframe
 		 *
-		 * @return {HTMLElement} a reference to the newly created iframe element if successfully inserted, otherwise NULL.
+		 * @return {HTMLElement} a reference to the newly created iframe element if successfully inserted, otherwise null.
 		*/
 
 		function replace_iframe(attrs, cssText, parRef, cb, xmsgCB)
@@ -2304,8 +2290,8 @@ if (window["$sf"]) {
 			elID		= attrs.id;
 			el			= elID && _byID(elID);
 			tgn			= tagName(el);
-			el			= (tgn) ? el : NULL;
-			frameEl		= (tgn == IFRAME) ? el : NULL;
+			el			= (tgn) ? el : null;
+			frameEl		= (tgn == IFRAME) ? el : null;
 
 			if (frameEl) {
 
@@ -2316,8 +2302,8 @@ if (window["$sf"]) {
 				cl		= clone_iframe(frameEl, attrs, cssText, cb, xmsgCB);
 
 				//remove these attrs, since they will be reset
-				attr(cl, "onload",NULL);
-				attr(cl, "onreadystatechange",NULL);
+				attr(cl, "onload",null);
+				attr(cl, "onreadystatechange",null);
 			} else {
 				if (parRef) {
 					parRef = _byID(parRef);
@@ -2331,7 +2317,7 @@ if (window["$sf"]) {
 
 			try {
 				if (!parNode) {
-					append(d.body,cl);
+					append(theDocument.body,cl);
 				} else {
 					if (frameEl) {
 						parNode.replaceChild(cl, frameEl);
@@ -2345,7 +2331,7 @@ if (window["$sf"]) {
 				}
 			} catch (e) { }
 
-			cl = el = attrs = frameEl = parNode = cb = NULL;
+			cl = el = attrs = frameEl = parNode = cb = null;
 			return elt(elID);
 		}
 
@@ -2371,10 +2357,10 @@ if (window["$sf"]) {
 		{
 			var win, elWin, elDoc, frame_list, frame, fe, idx = 0, e, err;
 			try {
-				win = el.contentWindow || NULL;
+				win = el.contentWindow || null;
 
 				/*
-				 * We are allowed access, but sometimes, non-ie browser will report NULL
+				 * We are allowed access, but sometimes, non-ie browser will report null
 				 * so in this case we loop through the window frames to see if that is really
 				   the case
 				*/
@@ -2388,7 +2374,7 @@ if (window["$sf"]) {
 						try {
 							fe = frame.frameElement;
 						} catch (err) {
-							fe = NULL;
+							fe = null;
 						}
 						if (fe && fe == el) {
 							win = frame;
@@ -2397,7 +2383,7 @@ if (window["$sf"]) {
 					}
 				}
 			} catch (e) {
-				win = NULL;
+				win = null;
 			}
 			return win;
 		}
@@ -2483,7 +2469,7 @@ if (window["$sf"]) {
 				use_attach = w3c_attach;
 				use_detach = w3c_detach;
 			} else if (isIE) {
-				use_ie_old_attach 	= TRUE;
+				use_ie_old_attach 	= true;
 				use_attach 			= ie_attach;
 				use_detach 			= ie_detach;
 			}
@@ -2500,17 +2486,17 @@ if (window["$sf"]) {
 			 *
 			*/
 
-			obj = NULL;
+			obj = null;
 			try {
-				obj = d[CREATE_EVENT](EVT_TYPE);
+				obj = theDocument[CREATE_EVENT](EVT_TYPE);
 			} catch (err) {
-				obj = NULL;
+				obj = null;
 			}
 			if (!obj) {
 				try {
-					obj = d[CREATE_EVENT](EVT_TYPE+"s");
+					obj = theDocument[CREATE_EVENT](EVT_TYPE+"s");
 				} catch (err) {
-					obj = NULL;
+					obj = null;
 				}
 			}
 			if (obj) {
@@ -2520,7 +2506,7 @@ if (window["$sf"]) {
 				}
 			}
 
-			obj = NULL;
+			obj = null;
 
 			/* we attach load event handlers to also allow us to know as soon as
 			 * possible when dom is ready.  this script may have been loaded async
@@ -2530,7 +2516,7 @@ if (window["$sf"]) {
 			*/
 
 			attach(win, "load",  _handle_dom_load_evt);
-			attach(win, DCLDED,	 _handle_dom_load_evt);
+			attach(win, "DOMContentLoaded",	 _handle_dom_load_evt);
 
 			dom = lang.def(IAB_LIB + ".dom",
 			{
@@ -2562,7 +2548,7 @@ if (window["$sf"]) {
 				evtCncl:		evtCncl,
 				evtTgt:			evtTgt
 
-			}, NULL, TRUE);
+			}, null, true);
 
 		})();
 
@@ -2574,24 +2560,24 @@ if (window["$sf"]) {
 			replace:	replace_iframe,
 			view:		iframe_view
 
-		}, NULL, TRUE);
+		}, null, true);
 
 		logger = lang.def(IAB_LIB + ".logger",
 		{
 			log:	logInfo,
 			error: 	logError
-		}, NULL, TRUE);
+		}, null, true);
 
 		info = lang.def(IAB_INF,
 		{
 			errs:	[],
 			list: 	[]
-		}, NULL, TRUE);
+		}, null, true);
 
 
 		// Add Javascript shims
 		//IE doesn't support string.trim
-		if(!S[PROTO].trim) S[PROTO].trim = lang.trim;
+		if(!String[PROTO].trim) String[PROTO].trim = lang.trim;
 
 	})();
 

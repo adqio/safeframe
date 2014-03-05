@@ -1,0 +1,4 @@
+--compilers coffee:coffee-script/register
+--require should
+--ui bdd
+--reporter dot
