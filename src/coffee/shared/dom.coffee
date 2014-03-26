@@ -1,7 +1,7 @@
-define ["share/lang","shared/env"],(lang,env)->
+define ["./lang","./env"],(lang,env)->
   _lang = lang
   _env = env
-  win = window
+  win = if window? then window else this
   IFRAME					= "iframe"
   GC						= "CollectGarbage"
   ie_attach				= "attachEvent"
@@ -19,9 +19,6 @@ define ["share/lang","shared/env"],(lang,env)->
     "stopPropagation":				0,
     "preventBubble":				0
   }
-  NUMBER_MAX 					= (Number && Number.MAX_VALUE)
-  _es     					= (win && win.escape)
-  _ue     					= (win && win.unescape)
   isIE						= env.isIE
   useOldStyleAttrMethods		= false
   gc_timer_id					= 0
@@ -37,6 +34,10 @@ define ["share/lang","shared/env"],(lang,env)->
   evt_tgt_prop_a				= ""
   evt_tgt_prop_b				= ""
   iframe_msg_host_lib			= null
+  theDocument						= win.document
+  BLANK_URL				= "about:blank"
+  _cstr = lang.cstr
+  _callable = lang.callable
 
 
 
@@ -262,7 +263,7 @@ define ["share/lang","shared/env"],(lang,env)->
   @return {HTMLElement|null} null if nothing found
   ###
   elt = (id) ->
-    args = arguments_
+    args = arguments
     len = args.length
     dc = undefined
     if len > 1
@@ -347,7 +348,7 @@ define ["share/lang","shared/env"],(lang,env)->
   attr = (el, attrName, attrVal) ->
     e = undefined
     try
-      if arguments_.length > 2
+      if arguments.length > 2
         if attrVal is null
           if useOldStyleAttrMethods
             el.removeAttribute attrName, 0
@@ -387,7 +388,7 @@ define ["share/lang","shared/env"],(lang,env)->
     st = undefined
     try
       st = el.style
-      if arguments_.length > 1
+      if arguments.length > 1
         st.cssText = _cstr(val)
       else
         val = st.cssText
@@ -408,7 +409,7 @@ define ["share/lang","shared/env"],(lang,env)->
   @return {HTMLElement}
   ###
   make_element = (tagName, par) ->
-    ((arguments_.length > 1 and doc(par)) or theDocument).createElement tagName
+    ((arguments.length > 1 and doc(par)) or theDocument).createElement tagName
 
   ###
   Append and HTMLElement to another HTMLElement
@@ -884,25 +885,6 @@ define ["share/lang","shared/env"],(lang,env)->
       win = null
     win
 
-  ###
-  Write an entry to the console log and fire any log listeners
-
-  @message  The log message
-  ###
-  logInfo = (message) ->
-    console.log message  if win.console and console.log
-    return
-
-  ###
-  Write an entry to the console error log and fire any log listeners
-
-  @message  The log message
-  ###
-  logError = (message) ->
-    if win.console and console.error
-      console.error message
-    else console.log message  if win.console and console.log
-    return
 
   #
   #		 * Do some internal intialization below.  Some variable aren't really used beyond this intialization phase, hence
@@ -915,6 +897,7 @@ define ["share/lang","shared/env"],(lang,env)->
   ###
   @ignore
   ###
+  gc = _lang.noop
   (->
     obj = undefined
     ATTR_NAME = "SCROLLING"
@@ -1028,22 +1011,27 @@ define ["share/lang","shared/env"],(lang,env)->
 #    , null, true)
 #    return
 #  )()
-#  iframes = lang.def(IAB_LIB + ".dom.iframes",
-#    make: make_iframe
-#    clone: clone_iframe
-#    replace: replace_iframe
-#    view: iframe_view
-#  , null, true)
-#  logger = lang.def(IAB_LIB + ".logger",
-#    log: logInfo
-#    error: logError
-#  , null, true)
-#  info = lang.def(IAB_INF,
-#    errs: []
-#    list: []
-#  , null, true)
-#
-#  # Add Javascript shims
-#  #IE doesn't support string.trim
-#  String::trim or= lang.trim
-)()
+  )()
+  doc: doc
+  view: view
+  elt: elt
+  tagName: tagName
+  tags: tags
+  par: par
+  make: make_element
+  css: css
+  attr: attr
+  gc: gc
+  append: append
+  purge: purge
+  attach: attach
+  detach: detach
+  ready: ready
+  wait: wait
+  evtCncl: evtCncl
+  evtTgt: evtTgt
+  iframes:
+    make: make_iframe
+    clone: clone_iframe
+    replace: replace_iframe
+    view: iframe_view

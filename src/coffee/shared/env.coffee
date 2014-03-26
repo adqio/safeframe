@@ -1,4 +1,4 @@
-define ["lang"],(lang) ->
+define [],() ->
   win = window
   navigator = window.navigator
   theDocument = window.document

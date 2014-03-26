@@ -2577,7 +2577,7 @@ if (window["$sf"]) {
 
 		// Add Javascript shims
 		//IE doesn't support string.trim
-		if(!String[PROTO].trim) String[PROTO].trim = lang.trim;
+		if(!String.prototype.trim) String.prototype.trim = lang.trim;
 
 	})();
 

@@ -13,16 +13,7 @@
 	<base target="_top" />
 	<title></title>
 	<script type="text/javascript">
-        window.addEventListener("message", function(event){
-
-            console.log("r.html",arguments);
-        }, false);
 		window.onerror = function() { return true; };
-        var oldPost = window.postMessage;
-        window.postMessage = function(){
-            console.log("r.html",this,arguments);
-            oldPost.apply(this,arguments);
-        }
 	</script>
 	<style type="text/css">
 		#sf_body { margin:0px;padding:0px;background-color:transparent; }
@@ -30,7 +21,8 @@
 	</head>
 	<body id="sf_body">
 		<div id="sf_align" class="sf">
-			<script src="../js/safeframe.ext.js" class="sf"></script>
+			<script src="../js/lib/base.js" class="sf"></script>
+			<script src="../js/ext/ext.js" class="sf"></script>
 		</div>
 	</body>
 </html>

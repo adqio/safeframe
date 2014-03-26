@@ -27,9 +27,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 /** @ignore */
 (function(win) {
 
-var NULL					= null,
-	TRUE					= true,
-	FALSE					= false,
+var
 	LOAD					= "load",
 	ON_STR					= "on",
 	MSG						= "message",
@@ -50,6 +48,7 @@ var NULL					= null,
 	ERROR_COMMAND 			= "error",
     NOTIFY_GEOM_UPDATE		= "geom-update",
     NOTIFY_EXPAND			= "expand",
+  NOTIFY_FOCUS_CHANGE		= "focus-change",
     NOTIFY_COLLAPSE			= COLLAPSE_COMMAND,
     NOTIFY_COLLAPSED		= (NOTIFY_COLLAPSE + "d"),
     NOTIFY_FAILURE			= "failed",
@@ -87,19 +86,20 @@ var NULL					= null,
 	_detach					= (dom && dom.detach),
 	_attr					= (dom && dom.attr),
 
-	loaded						= FALSE,
-	is_expanded					= FALSE,
-	force_collapse				= FALSE,
-	is_registered				= FALSE,
+	loaded						= false,
+	is_expanded					= false,
+	force_collapse				= false,
+	is_registered				= false,
 	init_width					= 0,
 	init_height					= 0,
-	sandbox_cb					= NULL,
-	pending_msg					= NULL,
-	geom_info					= NULL,
-	pos_meta					= NULL,
+	sandbox_cb					= null,
+	pending_msg					= null,
+	geom_info					= null,
+	pos_meta					= null,
+  win_has_focus 				= false,
 	guid						= "",
 	host_cname					= "",
-	can_use_html5				= FALSE,
+	can_use_html5				= false,
 	frame_id					= "",
 	pos_id						= "",
 	err_msg_timer_id			= 0,
@@ -213,7 +213,7 @@ var NULL					= null,
 		_detach(w,UNLOAD,_handle_unload);
 
 
-		try { w.onerror = NULL; } catch (e) { }
+		try { w.onerror = null; } catch (e) { }
 
 		try {
 		   if (err_msg_timer_id) {
@@ -236,7 +236,7 @@ var NULL					= null,
 			}
 		} catch (e) { }
 
-		w = ie_old_attach = w3c_old_attach = ie_old_detach = w3c_old_detach = d = _ue = par = handler = grand_par = NULL;
+		w = ie_old_attach = w3c_old_attach = ie_old_detach = w3c_old_detach = d = _ue = par = handler = grand_par = null;
 		return success;
 	}
 
@@ -268,7 +268,7 @@ var NULL					= null,
 
 
 		try {
-			if (isIE && win.onmessage) win.onmessage = NULL;
+			if (isIE && win.onmessage) win.onmessage = null;
 		} catch (e) { }
 
 		try {
@@ -317,7 +317,7 @@ var NULL					= null,
 
 	function _check_orphaned()
 	{
-		var is_orphaned = FALSE, e;
+		var is_orphaned = false, e;
 
 		_detect_bad_iframe();
 
@@ -345,7 +345,7 @@ var NULL					= null,
 		try {
 			is_orphaned = (win == top && orphan_timer_id != -1);
 		} catch (e) {
-			is_orphaned = FALSE;
+			is_orphaned = false;
 		}
 		if (is_orphaned) {
 			orphan_timer_id = -1;
@@ -376,7 +376,7 @@ var NULL					= null,
 	{
 		/* detect iframe policy files that may be created by ad-interax and/or double click and nuke them */
 
-		var iframes = _tags("iframe"), idx = 0, srcHost = "", written = FALSE, tag;
+		var iframes = _tags("iframe"), idx = 0, srcHost = "", written = false, tag;
 
 
 		if (host_cname) {
@@ -454,7 +454,7 @@ var NULL					= null,
 	function _handle_load()
 	{
 		if (loaded) return;
-		loaded = TRUE;
+		loaded = true;
 
 		_detach(win,LOAD,_handle_load);
 		_set_hyperlink_targets();
@@ -488,7 +488,7 @@ var NULL					= null,
 		dom.evtCncl(evt);
 
 		if (str && src && src == top) {
-			msg_params	= ParamHash(str,NULL,NULL,TRUE,TRUE);
+			msg_params	= ParamHash(str,null,null,true,true);
 			msg_guid	= msg_params.guid;
 			msg_obj		= msg_params.msg;
 			if (guid == msg_guid && msg_obj && typeof msg_obj == OBJ) {
@@ -497,7 +497,7 @@ var NULL					= null,
 					setTimeout(function()
 					{
 						_receive_msg(msg_obj, evt);
-						msg_params = evt = msg_guid = msg_obj = NULL;
+						msg_params = evt = msg_guid = msg_obj = null;
 					},1);
 				} catch (e) { }
 			}
@@ -526,7 +526,7 @@ var NULL					= null,
 
 	function _call_raw_evt_func(type, f, remove)
 	{
-		var bOK = FALSE, ie_f, w3c_f, e;
+		var bOK = false, ie_f, w3c_f, e;
 		if (remove) {
 			ie_f 	= ie_old_detach || w3c_old_detach;
 			w3c_f	= w3c_old_detach;
@@ -538,22 +538,22 @@ var NULL					= null,
 		if (ie_f) {
 			try {
 				ie_f(type, f);
-				bOK = TRUE;
+				bOK = true;
 			} catch (e) {
-				bOK = FALSE;
+				bOK = false;
 			}
 			if (!bOK) {
 				try {
 					ie_f.call(win, type, f);
-					bOK = TRUE;
+					bOK = true;
 				} catch (e) {
-					bOK = FALSE;
+					bOK = false;
 				}
 			}
 		}
 		if (w3c_f && !bOK) {
 			try {
-				w3c_f.call(win, type, f, FALSE);
+				w3c_f.call(win, type, f, false);
 			} catch (e) {
 
 			}
@@ -576,7 +576,7 @@ var NULL					= null,
 
 	function _attach_override(type, f)
 	{
-		var bDoDefault = FALSE;
+		var bDoDefault = false;
 
 		type = _cstr(type)[TOLOWERCASE]();
 
@@ -591,7 +591,7 @@ var NULL					= null,
 				//noop
 			break;
 			default:
-				bDoDefault = TRUE;
+				bDoDefault = true;
 			break;
 		}
 		if (bDoDefault) _call_raw_evt_func(type, f);
@@ -640,7 +640,7 @@ var NULL					= null,
 				}
 			}
 		} else {
-			_call_raw_evt_func(type, f, TRUE);
+			_call_raw_evt_func(type, f, true);
 		}
 	}
 
@@ -703,7 +703,7 @@ var NULL					= null,
 			err_msg_timer_id = setTimeout(_report_errs, DOM_WATCH_INTERVAL);
 		} catch (e) { }
 
-		return TRUE;
+		return true;
 	}
 
 
@@ -721,7 +721,7 @@ var NULL					= null,
 
 	function _setup_win_evt_props(obj)
 	{
-		var n = lang.noop, O = Object, nobj = {get:n,set:n}, ret = FALSE;
+		var n = lang.noop, O = Object, nobj = {get:n,set:n}, ret = false;
 
 		if (obj) {
 			if (ie_old_attach) {
@@ -741,9 +741,9 @@ var NULL					= null,
 					obj[DS](ONUNLOAD, n);
 					obj[DG](ONMSG, n);
 					obj[DS](ONMSG, n);
-					ret = TRUE;
+					ret = true;
 				} catch (e) {
-					ret = FALSE;
+					ret = false;
 				}
 			}
 			if (!ret && O[DP]) {
@@ -751,9 +751,9 @@ var NULL					= null,
 					O[DP](obj, ONLOAD, nobj);
 					O[DP](obj, ONUNLOAD, nobj);
 					O[DP](obj, ONMSG, nobg);
-					ret = TRUE;
+					ret = true;
 				} catch (e) {
-					ret = FALSE;
+					ret = false;
 				}
 			}
 		}
@@ -773,7 +773,7 @@ var NULL					= null,
 
 	function _construction(details)
 	{
-		var cont = FALSE, ret = TRUE, el, nm, temp, cur_time, guid_time, time_delta, e;
+		var cont = false, ret = true, el, nm, temp, cur_time, guid_time, time_delta, e;
 
 		details = (details && (details instanceof Object)) ? details : {};
 
@@ -812,7 +812,7 @@ var NULL					= null,
 
 		try {
 			if (top == par) {
-				render_params	= ParamHash(nm, NULL,NULL,TRUE,TRUE);
+				render_params	= ParamHash(nm, null,null,true,true);
 				cur_time		= lang.time();
 				guid			= render_params.guid;
 				guid_time		= _cnum(guid.replace(/[^_]*_(\d+)_\d+_\d+/g, "$1"), 0);
@@ -826,8 +826,8 @@ var NULL					= null,
 				details.status = 500.102;
 			}
 		} catch (e) {
-			render_params = guid = NULL;
-			cont 			= FALSE;
+			render_params = guid = null;
+			cont 			= false;
 			details.status	= 500.103;
 		}
 		if (cont) {
@@ -840,11 +840,12 @@ var NULL					= null,
 				host_cname		= render_params.host;
 				geom_info		= render_params.geom;
 				can_use_html5	= lang.cbool(render_params.html5);
+        win_has_focus 	= lang.cbool(render_params.has_focus);
 				temp			= render_conf.bg;
 
 				if (geom_info) {
-					geom_info = ParamHash(_ue(geom_info), NULL,NULL,TRUE,TRUE);
-					if (!geom_info.self || !geom_info.exp) geom_info = NULL;
+					geom_info = ParamHash(_ue(geom_info), null,null,true,true);
+					if (!geom_info.self || !geom_info.exp) geom_info = null;
 				}
 
 
@@ -897,12 +898,12 @@ var NULL					= null,
 
 			} catch (e) {
 				details.status = 500.105;
-				render_params = render_conf = guid = NULL;
-				ret = FALSE;
+				render_params = render_conf = guid = null;
+				ret = false;
 			}
 		} else {
-			render_params = guid = NULL;
-			ret = FALSE;
+			render_params = guid = null;
+			ret = false;
 		}
 		return ret;
 	}
@@ -989,12 +990,12 @@ var NULL					= null,
 
 	function _receive_msg(params, evt)
 	{
-		var ret = FALSE, msg, cmd, g, e, data = {};
+		var ret = false, msg, cmd, g, e, data = {};
 
 		if (params) {
 			g	   	= params.geom || "";
 			cmd		= params.cmd;
-			if (g) geom_info = ParamHash(_ue(g),NULL,NULL,TRUE,TRUE);
+			if (g) geom_info = ParamHash(_ue(g),null,null,true,true);
 		}
 		
 		data.cmd = cmd;
@@ -1008,64 +1009,69 @@ var NULL					= null,
 			//collapse happened from outside, rather thant by virture of API
 			//close the channel now. . .
 
-			ret		= TRUE;
+			ret		= true;
 			if (is_expanded) {
-				pending_msg		= NULL;
-				is_expanded		= FALSE;
-				force_collapse 	= TRUE;
+				pending_msg		= null;
+				is_expanded		= false;
+				force_collapse 	= true;
 				_collapse();
-				force_collapse = FALSE;
+				force_collapse = false;
 				_fire_sandbox_callback(NOTIFY_COLLAPSED);
 			}
 
 		} 
 		else if (cmd == NOTIFY_COLLAPSE) {
 			//Y.SandBox.vendor.collapse was called, notify
-			ret		= TRUE;
+			ret		= true;
 			if (is_expanded) {
-				pending_msg 	= NULL;
-				is_expanded  	= FALSE;
+				pending_msg 	= null;
+				is_expanded  	= false;
 				_fire_sandbox_callback(NOTIFY_COLLAPSED);
 			}
 		} 
 		else if (cmd == NOTIFY_EXPAND) {
-			ret		= TRUE;
+			ret		= true;
 			if (pending_msg) {
-				pending_msg		= NULL;
-				is_expanded 	= TRUE;
+				pending_msg		= null;
+				is_expanded 	= true;
 				_fire_sandbox_callback(NOTIFY_EXPAND+"ed");
 			}
 		} 
 		else if (cmd == NOTIFY_GEOM_UPDATE) {
 			_fire_sandbox_callback(NOTIFY_GEOM_UPDATE);
-		} 
+		}
+    else if (cmd == NOTIFY_FOCUS_CHANGE) {
+      			data.info = data.value = lang.cbool(data.value);
+      			win_has_focus = data.value;
+      			_fire_sandbox_callback(NOTIFY_FOCUS_CHANGE, data);
+   	}
 		else if (cmd == NOTIFY_READ_COOKIE) {
-			ret		= TRUE;
+			ret		= true;
 			if (pending_msg) {
-				pending_msg		= NULL;
-				is_expanded 	= TRUE;
+				pending_msg		= null;
+				is_expanded 	= true;
 				data = params && params.value;
 				_fire_sandbox_callback(NOTIFY_READ_COOKIE, data);
 			}
 		} 
 		else if (cmd == NOTIFY_WRITE_COOKIE) {
-			ret		= TRUE;
+			ret		= true;
 			if (pending_msg) {
-				pending_msg		= NULL;
-				is_expanded 	= TRUE;
+				pending_msg		= null;
+				is_expanded 	= true;
 				_fire_sandbox_callback(NOTIFY_WRITE_COOKIE, data);
 			}
 		}
 		else if (cmd == NOTIFY_FAILURE) {
-			ret		= TRUE;
+			ret		= true;
 			if (pending_msg) {
-				pending_msg		= NULL;
-				is_expanded 	= TRUE;
+				pending_msg		= null;
+				is_expanded 	= true;
 				_fire_sandbox_callback(NOTIFY_FAILURE, data);
 			}
 		}
 		
-		params = NULL;
+		params = null;
 		return ret;
 	}
 
@@ -1084,7 +1090,7 @@ var NULL					= null,
 
 	function _send_msg(str, cmd)
 	{
-		var id = lang.guid("sf_pnd_cmd"), frame_id = render_params.dest, sent = FALSE, sent_time = lang.time(), params;
+		var id = lang.guid("sf_pnd_cmd"), frame_id = render_params.dest, sent = false, sent_time = lang.time(), params;
 
 		if (!str || !cmd || pending_msg) return;
 
@@ -1095,22 +1101,22 @@ var NULL					= null,
 		{
 			if (pending_msg && pending_msg.id == id) {
 				if (cmd == EXPAND_COMMAND || cmd == "exp-push") {
-					force_collapse = TRUE;
+					force_collapse = true;
 					_collapse();
-					force_collapse = FALSE;
+					force_collapse = false;
 				}
 				_fire_sandbox_callback(NOTIFY_FAILURE+":"+cmd+":timeout");
 			}
-			id = sent = sent_time = cmd = str = pending_msg = params = NULL;
+			id = sent = sent_time = cmd = str = pending_msg = params = null;
 
 		}, MAX_MSG_WAIT_TIME);
 
 		if (can_use_html5) {
 			try {
 				top.postMessage(params.toString(), ((host_cname == "file" || host_cname == "") ? "*" : host_cname));
-				sent = TRUE;
+				sent = true;
 			} catch (e) {
-				sent = FALSE;
+				sent = false;
 			}
 		}
 
@@ -1188,7 +1194,7 @@ var NULL					= null,
 
 
 		fcDivStyle.cssText = (preTxt+xTxt+yTxt);
-		fcDiv = fcDivStyle = NULL;
+		fcDiv = fcDivStyle = null;
 	}
 
 	/**
@@ -1204,9 +1210,9 @@ var NULL					= null,
 
 	function _collapse()
 	{
-		if (!force_collapse && (!is_registered || !is_expanded || pending_msg)) return FALSE;
+		if (!force_collapse && (!is_registered || !is_expanded || pending_msg)) return false;
 		_set_alignment(0, 0);
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -1232,12 +1238,12 @@ var NULL					= null,
 
 		init_width 		= initWidth;
 		init_height 	= initHeight;
-		is_registered	= TRUE;
+		is_registered	= true;
 
 		if (lang.callable(notify)) {
 			sandbox_cb	= notify;
 		} else {
-			sandbox_cb 	= NULL;
+			sandbox_cb 	= null;
 		}
     }
 
@@ -1281,7 +1287,7 @@ var NULL					= null,
     */
  function expand(deltaXorDesc, deltaY, p)
     {
-		var xn = FALSE, yn = FALSE, doAlign = FALSE,
+		var xn = false, yn = false, doAlign = false,
 			cmd_nm  = (p) ? "exp-push" : EXPAND_COMMAND,
 			cmd_str = ["cmd=", cmd_nm, "&pos=", pos_id],
 			dx = 0, dy = 0, r, b, t, l, align_el, align_el_st, align_buffer;
@@ -1302,7 +1308,7 @@ var NULL					= null,
 			}
 
 			if (!r && l) {
-				xn 		= TRUE;
+				xn 		= true;
 				dx		= -1 * l;
 			}
 			if (r && !l) {
@@ -1310,16 +1316,16 @@ var NULL					= null,
 			}
 
 			if (!b && t) {
-				yn 		= TRUE;
+				yn 		= true;
 				dy		= -1 * t;
 			}
 			if (b && !t) {
 				dy		= b;
 			}
 			if ((t && b) || (l && r)) {
-				doAlign = FALSE;
+				doAlign = false;
 			} else {
-				doAlign = TRUE;
+				doAlign = true;
 			}
 
 			if (doAlign) {
@@ -1370,7 +1376,7 @@ var NULL					= null,
 			_send_msg(_cstr(cmd_str), cmd_nm);
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -1483,7 +1489,7 @@ var NULL					= null,
 	*/
 	function cookie(cookieName, cookieData)
 	{
-		var isRead = (cookieData == NULL);
+		var isRead = (cookieData == null);
 		
 		var cmd_nm = isRead ? "read-cookie" : "write-cookie";
 	
@@ -1531,7 +1537,13 @@ var NULL					= null,
 		return tv;
 	}
 
-	/**
+
+  function winHasFocus(){
+    		return win_has_focus;
+  }
+
+
+  /**
 	 * Return whether or not a particular feature is supported, or an object containing
 	 * key/value pairs denoting all features and whether or not they are supported
 	 *
@@ -1554,13 +1566,13 @@ var NULL					= null,
 
 	function supports(key)
 	{
-		var conf = render_params.conf, sup = (conf && conf.supports) || FALSE;
+		var conf = render_params.conf, sup = (conf && conf.supports) || false;
 
 		if (sup) {
 			key = _cstr(key);
 			if (key) {
-				sup = sup[key] || FALSE;
-				if(sup == "0") sup = FALSE;
+				sup = sup[key] || false;
+				if(sup == "0") sup = false;
 			} else {
 				sup = lang.mix({}, sup);
 			}
@@ -1591,8 +1603,10 @@ var NULL					= null,
 					supports:	supports,
 					cookie: 	cookie,
 					message: 	message,
-					inViewPercentage: inViewPercentage
-				}, sf, TRUE);
+					inViewPercentage: inViewPercentage,
+          winHasFocus: winHasFocus
+
+				}, sf, true);
 
 				// QUESTION - IS this just leftover?
 				// lang.def("Y.SandBox.vendor", sf.vend);

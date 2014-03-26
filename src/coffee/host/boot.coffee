@@ -9,19 +9,18 @@
 #THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
-((win) ->
+define ["./../shared/base"],(sf) ->
+  win = if window? then window else @
   _log = (msg, is_err) ->
-    head_el = undefined
-    err_tag = undefined
     try
-      lib = (sf and sf.lib)  unless lib # insure we have lib
+      lib = sf.lib
       if lib and lib.logger and win is top
         if is_err
           lib.logger.error msg
         else
           lib.logger.log msg
       else
-        
+
         # Append error message as comment to header
         head_el = d.getElementsByTagName("head")[0]
         err_tag = d.createElement("script")
@@ -29,7 +28,7 @@
         err_tag.text = "<!-- SafeFrame " + ((if (is_err) then "error" else "log")) + ": " + (msg or "unknown") + " -->"
         head_el.appendChild head_el, err_tag
     return
-  
+
   ###
   Create the HTML markup for a position if a src property was used
   
@@ -48,7 +47,7 @@
       "ipt>"
     ]
   _auto_boot = ->
-    do_auto = TRUE
+    do_auto = true
     config = undefined
     sf_host = undefined
     host_file = undefined
@@ -61,14 +60,14 @@
       try
         config = sf_host and sf_host.Config()
       catch e
-        config = NULL
+        config = null
       unless config
         try
           config = sf_host and sf_host.conf
         catch e
-          config = NULL
+          config = null
       if config
-        do_auto = FALSE  if ("auto" of config) and config.auto is FALSE
+        do_auto = false  if ("auto" of config) and config.auto is false
         if not sf_host.render or not sf_host.Config
           host_file = config.hostFile
           if host_file
@@ -82,32 +81,32 @@
               scr_tag.onreadystatechange = ->
                 rs = scr_tag.readyState
                 if rs is "loaded" or rs is "complete"
-                  doing_auto_boot = FALSE
+                  doing_auto_boot = false
                   boot()  if do_auto
-                  scr_tag.onreadystatechange = NULL
-                  scr_tag = head = sf_host = config = NULL
+                  scr_tag.onreadystatechange = null
+                  scr_tag = head = sf_host = config = null
                 return
             else
               scr_tag.onload = ->
-                doing_auto_boot = FALSE
+                doing_auto_boot = false
                 boot()  if do_auto
-                scr_tag.onload = NULL
-                scr_tag = head = sf_host = config = NULL
+                scr_tag.onload = null
+                scr_tag = head = sf_host = config = null
                 return
-            doing_auto_boot = TRUE
+            doing_auto_boot = true
             head.appendChild scr_tag
             return
       if do_auto
         if config
-          doing_auto_boot = TRUE
+          doing_auto_boot = true
           boot()
-          doing_auto_boot = FALSE
+          doing_auto_boot = false
         else
           setTimeout _auto_boot, 50  if boot_retries++ <= AUTO_BOOT_MAX_RETRIES
     else
       boot()
     return
-  
+
   ###
   Go through and remove any inline script tags that are our data-islands , which have already been boostrapped
   
@@ -126,7 +125,7 @@
           _purge script_tag
           delete inline_tags_processed[script_tag_id]
     return
-  
+
   ###
   Search for SafeFrames tags and render them. This function is called
   automatically whenever the SafeFrames publisher library is loaded. However a configuration
@@ -142,7 +141,7 @@
     script_tags = (_tags and _tags("script")) or []
     boot_positions = []
     idx = 0
-    ret = FALSE
+    ret = false
     errMsg = undefined
     sf_host = sf and sf.host
     sf_inline_conf = sf_host and sf_host.conf
@@ -164,7 +163,7 @@
     sf_ocnf = undefined
     err = undefined
     if not sf or not lang or not dom
-      _log "SafeFrame base library not found", TRUE
+      _log "SafeFrame base library not found", true
       return ret
     lib = (sf and sf.lib)  unless lib # insure we have lib
     if doing_auto_boot and has_booted
@@ -174,23 +173,23 @@
       try
         sf_conf = sf_host.Config()
       catch err
-        sf_conf = NULL
+        sf_conf = null
       if sf_inline_conf and not sf_conf
         try
           sf_conf = sf_host.Config(sf_inline_conf)
         catch e
-          sf_conf = NULL
+          sf_conf = null
       unless sf_conf
         _log "No configuration found"
         return ret
     while script_tag = script_tags[idx++]
       if script_tag.className is SF_DATATAG_CLASS or _attr(script_tag, "type") is SF_TAG_TYPE
-        has_booted = TRUE
+        has_booted = true
         script_tag_id = _attr(script_tag, "id")
         unless script_tag_id
           script_tag_id = _guid("sf_data_element")
           _attr script_tag, "id", script_tag_id
-        
+
         # ignore the tag if we already booted it 
         continue  if inline_tags_processed[script_tag_id]
         data = script_tag.text or script_tag.innerHTML or script_tag.innerText
@@ -199,9 +198,9 @@
           data = new Function("return " + data)
           data = data()
         catch err
-          data = NULL
+          data = null
           errMsg = "Error parsing tag configuration " + (err and err.message or "")
-          _log errMsg, TRUE
+          _log errMsg, true
           continue
         if data and data.id and (data.html or data.src)
           unless win is top
@@ -214,47 +213,47 @@
           else
             script_tag_par = _par(script_tag)
             unless script_tag_par
-              _log "can't find parent element for script tag", TRUE
+              _log "can't find parent element for script tag", true
               continue
-            
+
             #
-            #            * Check for an existing position config
-            #            *
-            #           
+            #						 * Check for an existing position config
+            #						 *
+            #						
             pos_conf = (sf_conf and sf_conf.positions[data.id])
             unless pos_conf
-              
+
               #
-              #              * No position config defined already so check for an inline config
-              #              *
-              #             
+              #							 * No position config defined already so check for an inline config
+              #							 *
+              #							
               pos_conf = data.conf
               pos_conf.id = data.id
               pos_conf = new sf_host.PosConfig(pos_conf)  if pos_conf
             unless pos_conf
-              _log "no position conf found pre-defined or inline for position " + data.id, TRUE
+              _log "no position conf found pre-defined or inline for position " + data.id, true
               continue
-            
+
             #
-            #              * we are going to auto create a destination element
-            #              *
-            #             
+            #							 * we are going to auto create a destination element
+            #							 *
+            #							
             pos_conf = new sf_host.PosConfig(pos_conf, _guid(SF_POSELEM_WRAPPER_CLASS))  unless pos_conf.dest
             if data.meta
               pos_meta = data.meta
               meta_key = ""
               shared_meta = {}
-              
+
               #
-              #              * Process meta data to be shared
-              #              * The 1st key that points to an object of its own, is considered
-              #              * private / owned data.  Any other keys are considered shared data
-              #              *
-              #              * You can't have more than one set of private / owner information unless
-              #              * its nested so having anything other than a structure of key = [some primtive value]
-              #              * or key = [obj] (1) time only, is all that makes sense
-              #              *
-              #             
+              #							 * Process meta data to be shared
+              #							 * The 1st key that points to an object of its own, is considered
+              #							 * private / owned data.  Any other keys are considered shared data
+              #							 *
+              #							 * You can't have more than one set of private / owner information unless
+              #							 * its nested so having anything other than a structure of key = [some primtive value]
+              #							 * or key = [obj] (1) time only, is all that makes sense
+              #							 *
+              #							
               for meta_key of pos_meta
                 pos_meta_item = pos_meta[meta_key]
                 typ = typeof pos_meta_item
@@ -262,18 +261,18 @@
                   prv_meta = pos_meta_item
                   prv_meta_key = meta_key
                 shared_meta[meta_key] = pos_meta_item  if typ isnt "object" and typ isnt "function"
-              pos_meta = new sf_host.PosMeta(shared_meta, prv_meta_key or "", (if (prv_meta_key and prv_meta) then prv_meta else NULL))
-            pos_obj = new sf_host.Position(data, NULL, pos_meta, pos_conf)
-            
+              pos_meta = new sf_host.PosMeta(shared_meta, prv_meta_key or "", (if (prv_meta_key and prv_meta) then prv_meta else null))
+            pos_obj = new sf_host.Position(data, null, pos_meta, pos_conf)
+
             #
-            #            * OK we built the position and are ready to render
-            #            * We set a custom attribute on the script tag so that we can ignore it
-            #            * in case someone else calls boot again
-            #            *
-            #            * We will remove these tags from the dom later, but we don't want to do that
-            #            * now b/c the page might be in the process of loading
-            #            *
-            #           
+            #						 * OK we built the position and are ready to render
+            #						 * We set a custom attribute on the script tag so that we can ignore it
+            #						 * in case someone else calls boot again
+            #						 *
+            #						 * We will remove these tags from the dom later, but we don't want to do that
+            #						 * now b/c the page might be in the process of loading
+            #						 *
+            #						
             inline_tags_processed[script_tag_id] = script_tag_id
             pos_dest_el = _elt(pos_conf.dest)
             unless pos_dest_el
@@ -283,14 +282,14 @@
                 try
                   script_tag_par.insertBefore pos_dest_el
                 catch err
-                  _log "failed auto-adding destination element " + err.message, TRUE
+                  _log "failed auto-adding destination element " + err.message, true
                   continue
               else
                 d.write "<div id='", pos_conf.dest, "'></div>"
             boot_positions.push pos_obj
         else
-          _log "no content or id property found in the inline position object", TRUE
-    
+          _log "no content or id property found in the inline position object", true
+
     # end boot loop 
     if boot_positions.length
       try
@@ -299,36 +298,33 @@
         _log "failed during rendering " + e.message
     else
       _log "no positions to boot"
-    
+
     #
-    #    * now we set a timer and go through and clean up any already processed tags
-    #    *
-    #   
+    #		 * now we set a timer and go through and clean up any already processed tags
+    #		 *
+    #		
     dom.wait _clean_up_booted_tags
     return
-  FALSE = false
-  TRUE = true
-  NULL = null
   SF_DATATAG_CLASS = "sf_data"
   SF_TAG_TYPE = "text/x-safeframe"
   AUTO_BOOT_MAX_RETRIES = 100
   SF_POSELEM_WRAPPER_CLASS = "sf_position"
   d = (win and win.document)
-  sf = (win and win.$sf)
-  lib = (sf and sf.lib)
-  lang = (lib and lib.lang)
-  dom = (lib and lib.dom)
-  _cstr = (lang and lang.cstr)
-  _guid = (lang and lang.guid)
-  _elt = (dom and dom.elt)
-  _par = (dom and dom.par)
-  _tags = (dom and dom.tags)
-  _attr = (dom and dom.attr)
-  _purge = (dom and dom.purge)
-  _ready = (dom and dom.ready)
+  lib = sf.lib
+  lang = lib.lang
+  dom =  lib.dom
+  _cstr = lang.cstr
+  _guid = lang.guid
+  _elt = dom.elt
+  _par = dom.par
+  _tags = dom.tags
+  _attr = dom.attr
+  _purge = dom.purge
+  _ready = dom.ready
   inline_tags_processed = {}
   boot_retries = 0
-  has_booted = FALSE
-  doing_auto_boot = FALSE
+  has_booted = false
+  doing_auto_boot = false
   setTimeout _auto_boot, 50
-) window
+
+  sf

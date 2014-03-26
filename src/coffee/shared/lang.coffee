@@ -1,7 +1,6 @@
-define ->
-
+define [], ->
   next_id = 0
-  win = window #one reference to win
+  win = if window? then window else this  #one reference to win
   backSlash = String.fromCharCode(92)
   scrip_str				= 'scr"+"ipt'
   _es     					=  win.escape
@@ -36,8 +35,8 @@ define ->
     return str  if typ is "string"
     return "0"  if typ is "number" and not str
     return str.join("")  if typ is "object" and str and str.join
-    (if (str) then String(str) else "")
-
+    return str.toString() if typ is "boolean"
+    if str then String(str) else ""
   ###
   Forces type conversion of any JavaScript variable to a boolean.
   "Falsy" values such as "", 0, null, and undefined all return false
@@ -52,8 +51,9 @@ define ->
   @return {Boolean} The normalized boolean value
   ###
   cbool = (val) ->
-    not val or [undefined,"0","false","no","undefined","null",null].indexOf(val)>=0
-
+    not ([undefined,"0","false","no","undefined","null",null].indexOf(val)>=0 or false)
+  _keys = (obj)->
+    Object.keys?(obj) or (k for k,_v of obj)
 
   ###
   Forces type conversion of any JavaScript variable to a number.
@@ -314,68 +314,6 @@ define ->
 
 
   ###
-  Returns an escaped backslash for processing strings with HTML or JavaScript content
-
-  @name $sf.lib.lang-_escaped_backslash
-  @function
-  @static
-  @private
-  ###
-  _escaped_backslash = ->
-    backSlash + backSlash
-
-  ###
-  Returns an escaped double-quote for processing strings with HTML or JavaScript content
-
-  @name $sf.lib.lang-_escaped_dbl_quote
-  @function
-  @static
-  @private
-  ###
-  _escaped_dbl_quote = ->
-    backSlash + '"'
-
-  ###
-  Returns an escaped return character for processing strings with HTML or JavaScript content
-
-  @name $sf.lib.lang-_escaped_return
-  @function
-  @static
-  @private
-  ###
-  _escaped_return = ->
-    "\\r"
-
-  ###
-  Returns an escaped new line character for processing strings with HTML or JavaScript content
-
-  @name $sf.lib.lang-_escaped_new_line
-  @function
-  @static
-  @private
-  ###
-  _escaped_new_line = ->
-    "\\n"
-
-  ###
-  Returns a seperated SCRIPT tag ("<script>" becomes "<scr"+"ipt>") for processing strings with HTML or JavaScript content
-  Assumes a regular expression of: /<(\/)*script([^>]*)>/gi
-
-  @name $sf.lib.lang-_escaped_new_line
-  @function
-  @static
-  @private
-  ###
-  _safe_script_tag = (main_match, back_slash, attrs) ->
-    cstr [
-      "<"
-      back_slash
-      scrip_str
-      attrs
-      ">"
-    ]
-
-  ###
   Given a string of HTML escape quote marks and seperate script tags so that browsers don't get tripped up
   during processing.
 
@@ -387,23 +325,40 @@ define ->
   @static
   @public
   ###
-  jssafe_html = (str) ->
-    new_str = cstr(str)
-    if new_str
-      new_str = new_str.replace(/(<noscript[^>]*>)(\s*?|.*?)(<\/noscript>)/g, "")
-      new_str = new_str.replace(/\\/g, _escaped_backslash)
-      new_str = new_str.replace(/\"/g, _escaped_dbl_quote)
-      new_str = new_str.replace(/\n/g, _escaped_new_line)
-      new_str = new_str.replace(/\r/g, _escaped_return)
-      new_str = new_str.replace(/<(\/)*script([^>]*)>/g, _safe_script_tag)
-      new_str = new_str.replace(/\t/g, " ")
-      new_str = cstr([
-        dbl_quote
-        new_str
-        dbl_quote
-      ])
-      new_str = dbl_quote + new_str + dbl_quote
-    new_str
+
+
+  entityMap =
+    escape:
+      '&': '&amp;'
+      '<': '&lt;'
+      '>': '&gt;'
+      '"': '&quot;'
+      "'": '&#x27;'
+  entityRegexes =
+    escape:   new RegExp('[' + _keys(entityMap.escape).join('') + ']', 'g')
+#    unescape: new RegExp('(' + _.keys(entityMap.unescape).join('|') + ')', 'g')
+
+  jssafe_html = (str)->
+    return '' if not str?
+    return ('' + string).replace(entityRegexes.escape, (match)-> entityMap.escape[match])
+
+#  jssafe_html = (str) ->
+#    new_str = cstr(str)
+#    if new_str
+#      new_str = new_str.replace(/(<noscript[^>]*>)(\s*?|.*?)(<\/noscript>)/g, "")
+#      new_str = new_str.replace(/\\/g, _escaped_backslash)
+#      new_str = new_str.replace(/\"/g, _escaped_dbl_quote)
+#      new_str = new_str.replace(/\n/g, _escaped_new_line)
+#      new_str = new_str.replace(/\r/g, _escaped_return)
+#      new_str = new_str.replace(/<(\/)*script([^>]*)>/g, _safe_script_tag)
+#      new_str = new_str.replace(/\t/g, " ")
+#      new_str = cstr([
+#        dbl_quote
+#        new_str
+#        dbl_quote
+#      ])
+#      new_str = dbl_quote + new_str + dbl_quote
+#    new_str
 
   #todo refactor this to json
 
@@ -587,25 +542,30 @@ define ->
       buffer.push prop, sValueDelim, item, sPropDelim
     cstr buffer
   proto = ParamHash::
+  String::trim = trim unless String::trim
 
   ###
   @ignore
   ###
   proto.toString = proto.valueOf = toString
+  lang =
+    ParamHash: ParamHash
+    cstr: cstr
+    cnum: cnum
+    cbool: cbool
+    noop: noop
+    trim: trim
+    callable: callable
+    guid: guid
+    mix: mix
+    time: time
+    rand: rand
+    def: def
+    ns: ns
+    jssafe_html: jssafe_html
+    isArray: isArray
 
-
-  ParamHash: ParamHash
-  cstr: cstr
-  cnum: cnum
-  cbool: cbool
-  noop: noop
-  trim: trim
-  callable: callable
-  guid: guid
-  mix: mix
-  time: time
-  rand: rand
-  def: def
-  ns: ns
-  jssafe_html: jssafe_html
-  isArray: isArray
+  if exports?
+    exports.lang = lang
+  else
+    lang

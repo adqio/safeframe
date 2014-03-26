@@ -2,9 +2,11 @@
 	<head>
 	<title>Safe Frame Config and Callback Tests</title>
 
-		<script type="text/javascript" src="../src/js/lib/base.js"></script>
-		<script type="text/javascript" src="../src/js/host/host.js"></script>
-		<script type="text/javascript" src="../src/js/lib/boot.js"></script>
+		<!--<script type="text/javascript" src="../bower_components/requirejs/require.js"  data-main="../lib/js/host.js" ></script>-->
+        <!--<script type="text/javascript" src="../src/js/lib/base.js"></script>-->
+        <!--<script type="text/javascript" src="../src/js/host/host.js"></script>-->
+        <!--<script type="text/javascript" src="../src/js/lib/boot.js"></script>-->
+        <script type="text/javascript" src="../lib/js/safeframe.host.js"></script>
 		
 <style type="text/css">
 #log{
@@ -85,120 +87,127 @@
 		
 		
 		<script type="text/javascript">
-		
-		function logEntry(msg){
-			var l = document.getElementById("log");
-			l.innerHTML += "<br/>" + msg;
-		}
-		
-		/**
-		* Host Callback posMsg
-		*/
-		function posMsgCallback(id, message, data){
-			var msg = "posMsgCalled from " + id + " on event " + message;
-			if(data){
-				msg += " WITH DATA: " + data;
-			}
-			logEntry(msg);
-		}
-		
-		/**
-		* Host Callback beforePosMes
-		*/
-		function beforePosMsgCallback(id, message, data){
-			logEntry("beforePosMsgCalled");
-		}
-		
-		/**
-		* Host Callback startPosRender
-		*/
-		function onStartPosRenderCallback(id){
-			logEntry("onStartPosRenderCallback " + id);
-		}
-		
-		/**
-		* Host Callback endPosRender
-		*/
-		function onEndPosRenderCallback(id){
-			logEntry("onEndPosRenderCallback " + id);
-		}
-		
-				
-		/**
-		* Host Callback onFail
-		*/
-		function onFailureCallback(id){
-			logEntry("onEndPosRenderCallback " + id);
-		}
+            function logEntry(msg){
+                var l = document.getElementById("log");
+                l.innerHTML += "<br/>" + msg;
+            }
 
-		
-		/**
-		* Initialize the position config object for safe frame
-		*/
-		function initSfPosition(positionId, content, w, h){
-			var posConf, pos, opts;
-			
-			opts = {
-				id:positionId,
-				w:w,
-				h:h,
-				dest:"tgtLREC"
-			};
-			
-			posConf	 = new $sf.host.PosConfig(opts);
-			
-			pos	 = new $sf.host.Position(positionId, content);
-			return pos;
+            /**
+             * Host Callback posMsg
+             */
+            function posMsgCallback(id, message, data){
+                var msg = "posMsgCalled from " + id + " on event " + message;
+                if(data){
+                    msg += " WITH DATA: " + data;
+                }
+                logEntry(msg);
+            }
 
-		}
-		
-			function render_input()
-			{
-				var el, val, w, h, html, posID;
+            /**
+             * Host Callback beforePosMes
+             */
+            function beforePosMsgCallback(id, message, data){
+                logEntry("beforePosMsgCalled");
+            }
 
-				$sf.host.nuke();
+            /**
+             * Host Callback startPosRender
+             */
+            function onStartPosRenderCallback(id){
+                logEntry("onStartPosRenderCallback " + id);
+            }
 
-				el 	= $sf.lib.dom.elt("html_input");
-				val = (el && el.value) || "";
-				val = $sf.lib.lang.trim(val);
-
-				if (!val) {
-					alert("No HTML specified");
-					return;
-				}
-
-				html = val;
-
-				el	= $sf.lib.dom.elt("width_input");
-				val = (el && el.value) || "";
-				val = $sf.lib.lang.cnum(val,0);
-
-				if (val <= 0) {
-					alert("Width must be a valid number from 1 to 9999 pixels");
-					return;
-				}
-
-				w = val;
+            /**
+             * Host Callback endPosRender
+             */
+            function onEndPosRenderCallback(id){
+                logEntry("onEndPosRenderCallback " + id);
+            }
 
 
-				el	= $sf.lib.dom.elt("height_input");
-				val = (el && el.value) || "";
-				val = $sf.lib.lang.cnum(val,0);
-
-				if (val <= 0) {
-					alert("Height must be a valid number from 1 to 9999 pixels");
-					return;
-				}
-
-				h 	= val;
+            /**
+             * Host Callback onFail
+             */
+            function onFailureCallback(id){
+                logEntry("onEndPosRenderCallback " + id);
+            }
 
 
-				posID	 = "test_" + w + "x" + h;
-				pos = initSfPosition(posID, html, w, h);
+            /**
+             * Initialize the position config object for safe frame
+             */
+            function initSfPosition(positionId, content, w, h){
+                var posConf, pos, opts;
 
-				$sf.host.render(pos);
+                opts = {
+                    id:positionId,
+                    w:w,
+                    h:h,
+                    dest:"tgtLREC"
+                };
 
-			}
+                posConf	 = new $sf.host.PosConfig(opts);
+
+                pos	 = new $sf.host.Position(positionId, content);
+                return pos;
+
+            }
+
+            function render_input()
+            {
+                var el, val, w, h, html, posID;
+
+                $sf.host.nuke();
+
+                el 	= $sf.lib.dom.elt("html_input");
+                val = (el && el.value) || "";
+                val = $sf.lib.lang.trim(val);
+
+                if (!val) {
+                    alert("No HTML specified");
+                    return;
+                }
+
+                html = val;
+
+                el	= $sf.lib.dom.elt("width_input");
+                val = (el && el.value) || "";
+                val = $sf.lib.lang.cnum(val,0);
+
+                if (val <= 0) {
+                    alert("Width must be a valid number from 1 to 9999 pixels");
+                    return;
+                }
+
+                w = val;
+
+
+                el	= $sf.lib.dom.elt("height_input");
+                val = (el && el.value) || "";
+                val = $sf.lib.lang.cnum(val,0);
+
+                if (val <= 0) {
+                    alert("Height must be a valid number from 1 to 9999 pixels");
+                    return;
+                }
+
+                h 	= val;
+
+
+                posID	 = "test_" + w + "x" + h;
+                pos = initSfPosition(posID, html, w, h);
+
+                $sf.host.render(pos);
+
+            }
+
+//            window._ready = window._ready || []
+//          window.safeFrameReady = function(f) {
+//              return window._ready.push(f);
+//          };
+//
+//            window.safeFrameReady(function(){
+////
 
 
 
@@ -207,7 +216,7 @@
 
 			(function() {
 				var conf	= new $sf.host.Config({
-					renderFile:		"../src/html/r.html",
+					renderFile:		"../lib/html/r.html",
 					positions:
 					{
 						"LREC":
@@ -230,6 +239,7 @@
 
 				$sf.host.render(pos);
 			})();
+//        });
 		</script>
 	</body>
 </html>

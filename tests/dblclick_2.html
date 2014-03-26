@@ -4,12 +4,22 @@
 <head>
 	<title>IAB - About the IAB</title>
 
-	<script type="text/javascript" src="http://cdn.iab.net/extra/lib/js/safeframes/src/js/lib/base.js"></script>
-    <script type="text/javascript" src="http://cdn.iab.net/extra/lib/js/safeframes/src/js/host/host.js"></script>
-    <script type="text/javascript" src="http://cdn.iab.net/extra/lib/js/safeframes/src/js/lib/boot.js"></script>
-	
-	
-	</script>
+	<!--<script type="text/javascript" src="http://cdn.iab.net/extra/lib/js/safeframes/src/js/lib/base.js"></script>-->
+    <!--<script type="text/javascript" src="http://cdn.iab.net/extra/lib/js/safeframes/src/js/host/host.js"></script>-->
+    <!--<script type="text/javascript" src="http://cdn.iab.net/extra/lib/js/safeframes/src/js/lib/boot.js"></script>-->
+    <script>
+    window.addEventListener("message", function(event){
+        console.log("host",arguments)
+    }, false);
+    var oldPost = window.postMessage;
+    window.postMessage = function(){
+        console.log(this,"host",arguments);
+        oldPost.apply(this,arguments);
+    }
+    </script>
+    <script type="text/javascript" src="../lib/js/safeframe.host.js"></script>
+
+
 	
 	<!-- begin global js -->
 	<script language="javascript" src="http://www.iab.net/media/system/js/shared/AWCShared.js"></script>
@@ -56,7 +66,7 @@ Below the ad.
 <script type="text/javascript">
 	(function() {
 		var conf	= new $sf.host.Config({
-			renderFile:		"http://cdn.iab.net/extra/lib/js/safeframes/src/html/r.html",
+			renderFile:		"../lib/html/r.html",
 			positions: {}
 		});
 	})();

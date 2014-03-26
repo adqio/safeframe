@@ -1,5 +1,10 @@
 {
   "name": "Ad.js safeframe",
   "version": "0.0.1",
-  "main": "lib/host.js"
+  "main": "lib/host.js",
+  "dependencies": {
+    "requirejs":"*",
+    "almond":"*"
+  }
+
 }
