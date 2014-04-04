@@ -110,9 +110,7 @@ INCLUDES OF THE SAFEFRAMES FRAMEWORK
 These script files should be hosted on your CDN from a different 
 top level domain from the host site.
 -->
-	<script type="text/javascript" src="../src/js/lib/base.js"></script>
-    <script type="text/javascript" src="../src/js/host/host.js"></script>
-    <script type="text/javascript" src="../src/js/lib/boot.js"></script>
+<script type="text/javascript" src="../lib/js/safeframe.host.js"></script>
 	
 		<script type="text/javascript">
 		/**
@@ -121,7 +119,7 @@ top level domain from the host site.
 			(function() {
 				var conf	= new $sf.host.Config({
 					// Should be absolute path to render file hosted on CDN
-					renderFile:		"../src/html/r.html",
+					renderFile:		"../lib/html/r.html",
 					positions: {}
 				});
 

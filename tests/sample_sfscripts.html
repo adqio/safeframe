@@ -1,10 +1,7 @@
 <html>
 	<head>
 	<title>Safe Frame using Scripts</title>
-
-		<script type="text/javascript" src="../src/js/lib/base.js"></script>
-		<script type="text/javascript" src="../src/js/host/host.js"></script>
-		<script type="text/javascript" src="../src/js/lib/boot.js"></script>
+        <script type="text/javascript" src="../lib/js/safeframe.host.js"></script>
 	</head>
 	<body>
 <div id="top_leaderboard" style="height:90px;"></div>
@@ -188,7 +185,7 @@ Keys MUST be inside double quote marks.  Javascript allows a much looser syntax 
 
 			(function() {
 				var conf	= new $sf.host.Config({
-					renderFile:		"../src/html/r.html",
+					renderFile:		"../lib/html/r.html",
 					positions:
 					{
 						"LREC":

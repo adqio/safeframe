@@ -1,0 +1,1 @@
+ r.js -o baseUrl=. name=../../bower_components/almond/almond.js include=ext out=./safeframe.ext.js wrap=true optimize=none

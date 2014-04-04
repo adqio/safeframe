@@ -28,6 +28,89 @@
 define ["../shared/base"],(sf)->
 
   win = if window? then window else @
+  LOAD = "load"
+  ON_STR = "on"
+  MSG = "message"
+  UNLOAD = "un" + LOAD
+  ONUNLOAD = ON_STR + UNLOAD
+  ONMSG = ON_STR + MSG
+  ONLOAD = ON_STR + LOAD
+  DG = "__defineGetter__"
+  DS = "__defineSetter__"
+  DP = "__defineProperty__"
+  W3C_ATTACH = "addEventListener"
+  W3C_DETACH = "removeEventListener"
+  IE_ATTACH = "attachEvent"
+  IE_DETACH = "detachEvent"
+  TOLOWERCASE = "toLowerCase"
+  EXPAND_COMMAND = "exp-ovr"
+  COLLAPSE_COMMAND = "collapse"
+  ERROR_COMMAND = "error"
+  NOTIFY_GEOM_UPDATE = "geom-update"
+  NOTIFY_EXPAND = "expand"
+  NOTIFY_FOCUS_CHANGE = "focus-change"
+  NOTIFY_COLLAPSE = COLLAPSE_COMMAND
+  NOTIFY_COLLAPSED = (NOTIFY_COLLAPSE + "d")
+  NOTIFY_FAILURE = "failed"
+  NOTIFY_READ_COOKIE = "read-cookie"
+  NOTIFY_WRITE_COOKIE = "write-cookie"
+  STATUS_COLLAPSED = NOTIFY_COLLAPSED
+  STATUS_EXPANDED = NOTIFY_EXPAND + "ed"
+  STATUS_COLLAPSING = "collapsing"
+  STATUS_EXPANDING = NOTIFY_EXPAND + "ing"
+  OUR_TAG_CLS_NAME = "sf"
+  MAX_MSG_WAIT_TIME = 4000
+  DOM_WATCH_INTERVAL = 3000
+  GUID_VALID_TIME = 30000
+  OBJ = "object"
+  d = (win and win.document)
+  par = (win and win.parent)
+  lib = sf.lib
+  env = sf.env
+  lang =  lib.lang
+  ParamHash =  lang.ParamHash
+  dom = lib.dom
+  iframes = dom.iframes
+  msgclient_fb = dom.msgclient_fb
+  isIE = env.isIE
+  _ue = win.unescape
+  _cstr = lang.cstr
+  _cnum = lang.cnum
+  _append = dom.append
+  _tags = dom.tags
+  _elt = (dom and dom.elt)
+  _purge = (dom and dom.purge)
+  _attach = (dom and dom.attach)
+  _detach = (dom and dom.detach)
+  _attr = (dom and dom.attr)
+  loaded = false
+  is_expanded = false
+  force_collapse = false
+  is_registered = false
+  init_width = 0
+  init_height = 0
+  sandbox_cb = null
+  pending_msg = null
+  geom_info = null
+  pos_meta = null
+  win_has_focus = false
+  guid = ""
+  host_cname = ""
+  can_use_html5 = false
+  frame_id = ""
+  pos_id = ""
+  err_msg_timer_id = 0
+  orphan_timer_id = 0
+  inline_handler_timer_id = 0
+  err_msgs = []
+  unload_handlers = []
+  render_params = undefined
+  render_conf = undefined
+  ie_old_attach = undefined
+  w3c_old_attach = undefined
+  ie_old_detach = undefined
+  w3c_old_detach = undefined
+
 
   #
   #	 * --BEGIN-Intenral HTML Document handling
@@ -422,9 +505,9 @@ define ["../shared/base"],(sf)->
     switch type
       when UNLOAD, ONUNLOAD
         handlers = unload_handlers
-      when MSG, ONMSGif handlers
+      when MSG, ONMSG
         true
-    if handlers.length
+    if handlers?.length
       while handler = handlers[idx]
         if handler is f
           handlers.splice idx, 1
@@ -685,7 +768,7 @@ define ["../shared/base"],(sf)->
     if html
       html = _ue(html)
       try
-        d.write html
+        document.write html
         _check_orphaned()
         _reset_inline_handlers()
       catch e
@@ -1237,97 +1320,16 @@ define ["../shared/base"],(sf)->
       else
         sup = lang.mix({}, sup)
     sup
-  LOAD = "load"
-  ON_STR = "on"
-  MSG = "message"
-  UNLOAD = "un" + LOAD
-  ONUNLOAD = ON_STR + UNLOAD
-  ONMSG = ON_STR + MSG
-  ONLOAD = ON_STR + LOAD
-  DG = "__defineGetter__"
-  DS = "__defineSetter__"
-  DP = "__defineProperty__"
-  W3C_ATTACH = "addEventListener"
-  W3C_DETACH = "removeEventListener"
-  IE_ATTACH = "attachEvent"
-  IE_DETACH = "detachEvent"
-  TOLOWERCASE = "toLowerCase"
-  EXPAND_COMMAND = "exp-ovr"
-  COLLAPSE_COMMAND = "collapse"
-  ERROR_COMMAND = "error"
-  NOTIFY_GEOM_UPDATE = "geom-update"
-  NOTIFY_EXPAND = "expand"
-  NOTIFY_FOCUS_CHANGE = "focus-change"
-  NOTIFY_COLLAPSE = COLLAPSE_COMMAND
-  NOTIFY_COLLAPSED = (NOTIFY_COLLAPSE + "d")
-  NOTIFY_FAILURE = "failed"
-  NOTIFY_READ_COOKIE = "read-cookie"
-  NOTIFY_WRITE_COOKIE = "write-cookie"
-  STATUS_COLLAPSED = NOTIFY_COLLAPSED
-  STATUS_EXPANDED = NOTIFY_EXPAND + "ed"
-  STATUS_COLLAPSING = "collapsing"
-  STATUS_EXPANDING = NOTIFY_EXPAND + "ing"
-  OUR_TAG_CLS_NAME = "sf"
-  MAX_MSG_WAIT_TIME = 4000
-  DOM_WATCH_INTERVAL = 3000
-  GUID_VALID_TIME = 30000
-  OBJ = "object"
-  d = (win and win.document)
-  par = (win and win.parent)
-  lib = sf.lib
-  env = sf.env
-  lang =  lib.lang
-  ParamHash =  lang.ParamHash
-  dom = lib.dom
-  iframes = dom.iframes
-  msgclient_fb = dom.msgclient_fb
-  isIE = env.isIE
-  _ue = win.unescape
-  _cstr = lang.cstr
-  _cnum = lang.cnum
-  _append = dom.append
-  _tags = dom.tags
-  _elt = (dom and dom.elt)
-  _purge = (dom and dom.purge)
-  _attach = (dom and dom.attach)
-  _detach = (dom and dom.detach)
-  _attr = (dom and dom.attr)
-  loaded = false
-  is_expanded = false
-  force_collapse = false
-  is_registered = false
-  init_width = 0
-  init_height = 0
-  sandbox_cb = null
-  pending_msg = null
-  geom_info = null
-  pos_meta = null
-  win_has_focus = false
-  guid = ""
-  host_cname = ""
-  can_use_html5 = false
-  frame_id = ""
-  pos_id = ""
-  err_msg_timer_id = 0
-  orphan_timer_id = 0
-  inline_handler_timer_id = 0
-  err_msgs = []
-  unload_handlers = []
-  render_params = undefined
-  render_conf = undefined
-  ie_old_attach = undefined
-  w3c_old_attach = undefined
-  ie_old_detach = undefined
-  w3c_old_detach = undefined
 
   #
   #	 * --END-External Vendor/Client API
   #	 *
   #
   (->
+    window.$sf = sf
     err_info = {}
     if _construction(err_info)
-      lang.ext =
+      lang.mix sf.ext,
         register: register
         expand: expand
         collapse: collapse

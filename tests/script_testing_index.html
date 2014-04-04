@@ -29,9 +29,7 @@
 				<div id="tgtLREC"></div>
 			</div>
 		</div>
-		<script type="text/javascript" src="../src/js/lib/base.js"></script>
-		<script type="text/javascript" src="../src/js/host/host.js"></script>
-		<script type="text/javascript" src="../src/js/lib/boot.js"></script>
+        <script type="text/javascript" src="../lib/js/safeframe.host.js"></script>
 		<script type="text/javascript">
 			function render_input()
 			{
@@ -89,7 +87,7 @@
 
 			(function() {
 				var conf	= new $sf.host.Config({
-					renderFile:		"../src/html/r.html",
+					renderFile:		"../lib/html/r.html",
 					positions:
 					{
 						"LREC":

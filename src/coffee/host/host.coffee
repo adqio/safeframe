@@ -29,7 +29,7 @@ define ["./boot"],(sf)->
   SF_DATATAG_CLASS = "sf_data"
   SF_POSELEM_WRAPPER_CLASS = "sf_position"
   AUTO_BOOT_MAX_RETRIES = 100
-  GEOM_UPDATE_INTRVAL = 750
+  GEOM_UPDATE_INTRVAL = 100
   XCOM_RESP_DELAY = 1
   IE_BORDER_ADJ = 2
   INTERSECT_FACTOR = 10
@@ -52,10 +52,8 @@ define ["./boot"],(sf)->
   NOTIFY_FOCUS_CHANGE = "focus-change"
   DEFAULT_ZINDEX = 3000
   OBJ = "object"
-  FUNC = "function"
   STR = "string"
   ST = "style"
-  PROTO = "prototype"
   LEN = "length"
   WIDTH = "width"
   HEIGHT = "height"
@@ -101,14 +99,14 @@ define ["./boot"],(sf)->
   _doc = (dom.doc)
   _tagName = (dom.tagName)
   _view = (dom.view)
-  _ifr_view = (iframes and iframes.view)
+  _ifr_view = iframes.view
   _purge = (dom.purge)
   _ready = (dom.ready)
   _es = (win and win.escape)
   M = (win and win.Math)
-  _max = (M and M.max)
-  _min = (M and M.min)
-  _round = (M and M.round)
+  _max = M.max
+  _min = M.min
+  _round = M.round
   _rect = null
   ParamHash = (lang and lang.ParamHash)
   dc = (win and win[DOC])
@@ -117,7 +115,7 @@ define ["./boot"],(sf)->
   wbVer = ((ua and ua.webkit) or 0)
   geckVer = ((ua and ua.gecko) or 0)
   operaVer = ((ua and ua.opera) or 0)
-  loc = (win and win.location)
+  loc =  win.location
   locHost = (loc and ((loc.protocol + "//" + (loc.host or loc.hostname)) or ""))
   rendered_ifrs = {}
   msg_pipes = {}
@@ -145,7 +143,7 @@ define ["./boot"],(sf)->
   initID =undefined
   # missing the port number
 
-  # --BEGIN-SafeFrames publisher data class definitions 
+  # --BEGIN-SafeFrames publisher data class definitions
 
   ###
   Configure the base-level settings for the SafeFrames library
@@ -154,7 +152,7 @@ define ["./boot"],(sf)->
   the SafeFrames library is busy (however you can add new position configurations).
   Instatiating a new config, when the library is not busy will destroy / remove all currently
   managed positions and there configurations.
-  
+
   @name $sf.host.Config
   @constructor
   @public
@@ -174,12 +172,6 @@ define ["./boot"],(sf)->
   ###
   Config = (conf) ->
     me = this
-    pos_map = undefined
-    conf_pos_map = undefined
-    posID = undefined
-    pos_conf = undefined
-    pos_id = undefined
-    boot_up = undefined
     return (if (config) then _mix({}, config) else null)  unless arguments.length
     return new Config(conf)  unless me instanceof Config
     unless conf
@@ -198,7 +190,7 @@ define ["./boot"],(sf)->
     me.onPosMsg = (if _callable(conf.onPosMsg) then conf.onPosMsg else _noop)
     me.onStartPosRender = (if _callable(conf.onStartPosRender) then conf.onStartPosRender else _noop)
     me.onEndPosRender = (if _callable(conf.onEndPosRender) then conf.onEndPosRender else _noop)
-    me.onFailure = (if _callable(conf.onFailure) then conf.onFailure3 else _noop)
+    me.onFailure = (if _callable(conf.onFailure) then conf.onFailure else _noop)
     conf_pos_map = conf.positions
     me.positions = pos_map = {}
     if conf_pos_map
@@ -218,7 +210,7 @@ define ["./boot"],(sf)->
   Each $sf.host.PosConfig object has an id property that should be unique.  Creating a new $sf.host.PosConfig with an id, that has already been
   used results in changing the old $sf.host.PosConfig settings, and can only be done if the SafeFrames library is not busy.
   Automatically ads to the position map of the $sf.host.Config object if said config has already been created.
-  
+
   @name $sf.host.PosConfig
   @public
   @constructor
@@ -239,8 +231,6 @@ define ["./boot"],(sf)->
   PosConfig = (posIDorObj, destID, baseConf) ->
     me = this
     typ = (posIDorObj and typeof posIDorObj) or ""
-    sz = undefined
-    sz_split = undefined
     return new PosConfig(posIDorObj, destID, baseConf)  unless me instanceof PosConfig
     if typ is OBJ
       me.id = _cstr(posIDorObj.id)
@@ -265,7 +255,7 @@ define ["./boot"],(sf)->
         me.size = me.w + "x" + me.h
     else if typ is "string"
       me.id = _cstr(posIDorObj)
-      me.dest = _cstr(posIDorObj.dest)
+      me.dest = _cstr(destID)
     else
       me.dest = ""
       me.bg = "transparent"
@@ -285,7 +275,7 @@ define ["./boot"],(sf)->
   ###
   Construct a set of dynamic key/value pairs that can be shared as meta-data with the 3rd party content inside a SafeFrame.
   All data is treated as protected, and can only be specfied during construction of this object.
-  
+
   @exports PosMeta as $sf.host.PosMeta#
   @public
   @constructor
@@ -298,22 +288,22 @@ define ["./boot"],(sf)->
   private_data_key	 = "rmx",
   private_data      = {section_id:2342,site_id:23904},
   meta_data		 = new $sf.host.PosMeta(shared_data, private_data_key, private_data);
-  
+
   //show section id on host side
   alert(meta_data.value("rmx", "site_id")); //== 23904
-  
+
   @example
   //now retrieve this information inside the safe frame
-  
+
   var content_id = $sf.vend.meta("content_id"); //== 8978098
-  
+
   var rmx_section_id = $sf.vend.meta("rmx", "section_id") //== 2342, but note that vendor side code must know the "owner_key" upfront.
   ###
   PosMeta = (shared_obj, owner_key, owned_obj) ->
 
     ###
     A method retrieves a meta data value from this object.
-    
+
     @exports get_value as $sf.host.PosMeta#value
     @param {String} propKey The name of the value to retrieve
     @param {String} [owner_key] The name of the owner key of the meta data value. By default, it is assumed to be shared, so nothing needs to be passed in unless looking for a specific proprietary value
@@ -334,7 +324,7 @@ define ["./boot"],(sf)->
 
     ###
     Return a serialized string representation (in url query string format) of the meta data object
-    
+
     @exports serialize as $sf.host.PosMeta#toString
     @function
     @public
@@ -363,7 +353,7 @@ define ["./boot"],(sf)->
 
   ###
   Create the HTML markup for a position if a src property was used
-  
+
   @name $sf.host-_create_pos_markup
   @function
   @private
@@ -402,12 +392,6 @@ define ["./boot"],(sf)->
       mimeTypes = navigator.mimeTypes
       flash_ver = mimeTypes[FLASH_MIME].enabledPlugin.version  if mimeTypes and mimeTypes[FLASH_MIME] and mimeTypes[FLASH_MIME].enabledPlugin and mimeTypes[FLASH_MIME].enabledPlugin.description
     else if sf.env.isIE
-
-      # ActiveX detect
-      i = undefined
-      obj = undefined
-      tmpVer = undefined
-      p = undefined
       i = 0
       while i < flashActiveXVersions.length
         try
@@ -451,7 +435,7 @@ define ["./boot"],(sf)->
   ###
   Construction a postion content object that contains HTML, optionally meta-data, and optionally a position configuration to use.
   The id specified must match an id for a $sf.host.PosConfig (although said config could be specfied directly here via arguments).
-  
+
   @name $sf.host.Position
   @constructor
   @public
@@ -469,12 +453,11 @@ define ["./boot"],(sf)->
   #
   #	 * This is a data objet constructor, and we don't want dom interactions placed inside here
   #	 *
-  #	
+  #
   Position = (posIDorObj, html, meta, conf) ->
     me = this
     typ = (posIDorObj and typeof posIDorObj)
     origHtml = html
-    id = undefined
 
     # the reason for this check is so that some one doesn't have to do "new $sf.host.Position", they
     # can just do "$sf.host.Position"
@@ -511,11 +494,11 @@ define ["./boot"],(sf)->
           me.conf = new PosConfig(conf)
     return
 
-  # --END-SafeFrames publisher data class definitions 
+  # --END-SafeFrames publisher data class definitions
 
-  # --BEGIN--SafeFrames publisher side dom helper functions 
+  # --BEGIN--SafeFrames publisher side dom helper functions
 
-  # removed the concept of needing a "host" file and put all that logic to keep the file sturcture simple 
+  # removed the concept of needing a "host" file and put all that logic to keep the file sturcture simple
 
   ###
   @namespace $sf.lib.dom.msghost Contains functionality to reside in the top level page for sending and receiving x-domain messages to SafeFrame containers
@@ -555,7 +538,7 @@ define ["./boot"],(sf)->
   ###
   Return an array of values of clipping region information. Array represents top, right, bottom, left values respectively.
   If values are not specified in pixels, or no clip region is defined for that element, -1 is returned for each value.
-  
+
   @name $sf.lib.dom-_getClip
   @private
   @function
@@ -608,7 +591,7 @@ define ["./boot"],(sf)->
 
   ###
   Returns border values in pixels if possible to help calculate geometry of an element
-  
+
   @name $sf.lib.dom-_calcBorders
   @private
   @static
@@ -640,7 +623,7 @@ define ["./boot"],(sf)->
 
   ###
   Retrieve scroll values of a document
-  
+
   @name $sf.lib.dom-_get_doc_scroll
   @private
   @static
@@ -685,7 +668,7 @@ define ["./boot"],(sf)->
   we can use the "getBoundingClientRect" function which saves us some time / increases
   peformance. . however it really can only be called if the DOM is completely loaded,
   and if that is the case we fallback to the brute-force / non-IE method.
-  
+
   @name $sf.lib.dom-_getRectIE
   @private
   @static
@@ -758,7 +741,7 @@ define ["./boot"],(sf)->
   Calculate a geometric rectangle for a given element. For non-IE browsers, we must use
   brute-force and walk up the offsetParent tree. Also takes in consideration for some
   other slight variations in browsers.
-  
+
   @name $sf.lib.dom-_getRectNonIE
   @private
   @static
@@ -838,7 +821,7 @@ define ["./boot"],(sf)->
   ###
   Returns an object that represents a rectangle with the geometric information of an HTMLDocument
   (includes scroll width / height)
-  
+
   @name $sf.lib.dom.docRect
   @public
   @static
@@ -863,7 +846,7 @@ define ["./boot"],(sf)->
   ###
   Returns an object that represents a rectangle with the geometric information of an HTMLWindow
   (does not include scroll width / height)
-  
+
   @name $sf.lib.dom.winRect
   @public
   @static
@@ -894,7 +877,7 @@ define ["./boot"],(sf)->
 
   ###
   Returns whether or not an HTMLElement is contained within another HTMLElement
-  
+
   @name $sf.lib.dom.contains
   @public
   @static
@@ -922,7 +905,7 @@ define ["./boot"],(sf)->
 
   ###
   Returns the current value of a style attribute, or the current style object in its entirety depending on whether an attribute parameter is specified
-  
+
   @name $sf.lib.dom.currentStyle
   @public
   @static
@@ -963,7 +946,7 @@ define ["./boot"],(sf)->
 
   ###
   Calculate the surrounding boundaries of an HTMLElement, and whether or not the HTMLElement is "in-view" of the user
-  
+
   @name $sf.lib.dom.bounds
   @public
   @static
@@ -1040,7 +1023,7 @@ define ["./boot"],(sf)->
       #    		 * from the calculation part. . however during optimization phases, it was quick to store
       #    		 * off variables for from dom properties for width / height
       #    		 *
-      #    		
+      #
       while cur_st = currentStyle(par)
         if cur_st["display"] is "block" or cur_st["position"] is "absolute" or cur_st["float"] isnt "none" or cur_st["clear"] isnt "none"
           over_x_val = cur_st[OVER + "X"]
@@ -1100,13 +1083,13 @@ define ["./boot"],(sf)->
       #
       #    		 * Now look at the element dimensions vs the ref node dimensions
       #    		 *
-      #    		
+      #
       if not ref_node or ref_node is root
 
         #
         #	    		 * if ref node is the root node we need a bit of special processing
         #	    		 *
-        #	    		
+        #
         exp_rect.t = _max(el_rect.t, 0)
         exp_rect.l = _max(el_rect.l, 0)
         if ieVer and dc[COMPAT_MODE] is "BackCompat" and _attr(root, SCROLL) is "no"
@@ -1135,7 +1118,7 @@ define ["./boot"],(sf)->
       else
         cur_st = currentStyle(ref_node)
 
-        # In standards mode, body's offset and client numbers will == scroll numbers which is not what we want 
+        # In standards mode, body's offset and client numbers will == scroll numbers which is not what we want
         if _tagName(ref_node) is "body"
           ref_node = root
           t = el_rect.t
@@ -1264,7 +1247,7 @@ define ["./boot"],(sf)->
 
   ###
   Find any HTMLElements that are covering a given HTMLElement.
-  
+
   @name $sf.lib.dom.overlaps
   @public
   @static
@@ -1344,15 +1327,15 @@ define ["./boot"],(sf)->
         _attr checkEl, "id", null  if checkEl
     ret
 
-  # --END--SafeFrames publisher side dom helper functions 
+  # --END--SafeFrames publisher side dom helper functions
 
-  # --BEGIN--SafeFrames publisher side dom msg host helper functions 
+  # --BEGIN--SafeFrames publisher side dom msg host helper functions
 
   ###
   A proxy wrapper for calling into the cross-domain messaging host fall back library
   Looks for namespace will be $sf.lib.dom.msghost_fb
   Said library is used in cases where there is not HTML5 style messaging (i.e. no postMessage method available).
-  
+
   @name $sf.lib.dom.msghost-_call_xmsg_host_fb
   @private
   @static
@@ -1370,7 +1353,7 @@ define ["./boot"],(sf)->
   ###
   Listen for an initial HTML5 postMessage event, to validate that HTML5 style
   messaging can be used
-  
+
   @name $sf.lib.dom.msghost-_check_html5_init
   @private
   @static
@@ -1387,7 +1370,7 @@ define ["./boot"],(sf)->
   ###
   Listen for onmessage events in the main window. Validate that message is for us, and if so
   pass it through to the rest of the code and cancel further handling.
-  
+
   @name $sf.lib.dom.msghost-_handle_msg_from_outside
   @private
   @static
@@ -1416,7 +1399,7 @@ define ["./boot"],(sf)->
 
   ###
   Send a message to a child iframe.
-  
+
   @name $sf.lib.dom.msghost.send
   @public
   @static
@@ -1454,7 +1437,7 @@ define ["./boot"],(sf)->
 
   ###
   Get whether or not HTML5 style messaging can be used
-  
+
   @name $sf.lib.dom.msghost.usingHTML5
   @public
   @static
@@ -1485,7 +1468,7 @@ define ["./boot"],(sf)->
   represent key/value pairs of HTML attributes for the iframe. Note that the attrs object passed
   in will be modified with a new "name" property, to send information into the iframe and setup
   messaging.
-  
+
   @name $sf.lib.dom.msghost.prep
   @public
   @static
@@ -1532,7 +1515,7 @@ define ["./boot"],(sf)->
   Listen for messages from an IFRAME. Note that on the host / publisher side
   this library only allows for one message handler to be attached to a given
   IFRAME.
-  
+
   @name $sf.lib.dom.msghost.attach
   @public
   @static
@@ -1558,7 +1541,7 @@ define ["./boot"],(sf)->
 
   ###
   Detach listening for messages from an IFRAME
-  
+
   @name $sf.lib.dom.msghost.detach
   @public
   @static
@@ -1589,11 +1572,11 @@ define ["./boot"],(sf)->
     el = w = pipe = null
     return
 
-  # --END--SafeFrames publisher side dom msg host helper functions 
+  # --END--SafeFrames publisher side dom msg host helper functions
 
   ###
   Fire the specifed callback out to the publisher. Note that other arguments beyond the 1st argument are passed throug to the callback.
-  
+
   @name $sf.host-_fire_pub_callback
   @static
   @private
@@ -1623,7 +1606,7 @@ define ["./boot"],(sf)->
 
   ###
   Nuke the position an report that said position took too long to render
-  
+
   @name $sf.host-_handle_render_timeout
   @static
   @private
@@ -1642,7 +1625,7 @@ define ["./boot"],(sf)->
   ###
   Clear the timer that fires every so often to update the geometry in side
   of SafeFrames
-  
+
   @name $sf.host-_clear_geom_update_timer
   @static
   @private
@@ -1680,7 +1663,7 @@ define ["./boot"],(sf)->
 
   ###
   Set up the timer function that updates each SafeFrame with up to date geometric information
-  
+
   @name $sf.host-_set_geom_update_timer
   @static
   @private
@@ -1696,7 +1679,7 @@ define ["./boot"],(sf)->
 
   ###
   Update all SafeFrames with updated geometric information
-  
+
   @name $sf.host-_update_geom
   @static
   @private
@@ -1729,7 +1712,7 @@ define ["./boot"],(sf)->
   ###
   Update all SafeFrames with updated geometric information due to a window resize
   event.
-  
+
   @name $sf.host-_update_geom_win_resize
   @static
   @private
@@ -1741,7 +1724,7 @@ define ["./boot"],(sf)->
 
   ###
   Update all SafeFrames with updated geometric information due to a window scroll event
-  
+
   @name $sf.host-_update_geom_win_scroll
   @static
   @private
@@ -1754,7 +1737,7 @@ define ["./boot"],(sf)->
   ###
   Update a SafeFrame that has new geometric information due to its parent HTML element
   scrolling.
-  
+
   @name $sf.host-_handle_node_scroll
   @static
   @private
@@ -1789,7 +1772,7 @@ define ["./boot"],(sf)->
 
   ###
   Handle the window onscroll event, eventually leading to a geometric update
-  
+
   @name $sf.host-_handle_win_geom_scroll
   @static
   @private
@@ -1803,7 +1786,7 @@ define ["./boot"],(sf)->
   ###
   Handle the window onresize event, eventually leading to a geometric update
   once the window events are slowed down
-  
+
   @name $sf.host-_handle_win_geom_resize
   @static
   @private
@@ -1816,7 +1799,7 @@ define ["./boot"],(sf)->
 
   ###
   Update all SafeFrames with updated focus information
-  
+
   @name $sf.host-_update_focus
   @static
   @private
@@ -1860,7 +1843,7 @@ define ["./boot"],(sf)->
 
   ###
   Handle the window unload event, clearing up our state
-  
+
   @name $sf.host-_handle_unload
   @static
   @private
@@ -1892,7 +1875,7 @@ define ["./boot"],(sf)->
   ###
   Handle the window message event, passed from raw event handling of the msghost code.
   Pass through the data to our format handling functions for expand, etc.
-  
+
   @name $sf.host-_handle_msg_evt
   @static
   @private
@@ -1946,7 +1929,7 @@ define ["./boot"],(sf)->
 
   ###
   Check whether or not there are any SafeFrames being rendered
-  
+
   @name $sf.host-_has_pending_renders
   @static
   @private
@@ -1962,7 +1945,7 @@ define ["./boot"],(sf)->
 
   ###
   Send a response back down to the SafeFrame after a message was handled
-  
+
   @name $sf.host-_send_response
   @private
   @static
@@ -1976,7 +1959,7 @@ define ["./boot"],(sf)->
     @ignore
     ###
 
-    # we use a timeout here so that sending a response is asynchronus,just in case we got ping-pong messages 
+    # we use a timeout here so that sending a response is asynchronus,just in case we got ping-pong messages
     current_status = "sending-msg-down-" + msgObj.cmd
     setTimeout (->
       id = params and params.dest
@@ -1991,7 +1974,7 @@ define ["./boot"],(sf)->
   Handle the onload event from the IFRAME tag created for a SafeFrame.
   Note that b/c we used our own library to create the IFRAME ($sf.lib.dom.iframes),
   the "this" keyword will now properly point to the IFRAME in question.
-  
+
   @name $sf.host-_handle_frame_load
   @private
   @static
@@ -2017,7 +2000,7 @@ define ["./boot"],(sf)->
   ###
   Build an extra IFRAME to put behind any iframe that is expanding, to protect
   against painting issues in IE with window'd mode flash.
-  
+
   @name $sf.host-_shim_frame
   @private
   @static
@@ -2058,7 +2041,7 @@ define ["./boot"],(sf)->
   Build a geometry info object for a particular SafeFrame position, and also
   may attach an onscroll event listener to a parent HTML element if said parent element
   is scrollable but not the root document node / body
-  
+
   @name $sf.host-_build_geom
   @private
   @static
@@ -2126,13 +2109,13 @@ define ["./boot"],(sf)->
 
   ###
   Expands a given SafeFrame based on a command from the 3rd party content
-  
+
   @name $sf.host-_expand_safeframe
   @private
   @static
   @function
   @param {$sf.lib.lang.ParamHash} msgObj Details about how to do the expansion
-  
+
   TODO, handle omni-directional and push
   ###
   _expand_safeframe = (msgObj, push) ->
@@ -2233,7 +2216,7 @@ define ["./boot"],(sf)->
 
   ###
   Collapse a SafeFrame after it has been expanded
-  
+
   @name $sf.host-_collapse_safeframe
   @private
   @static
@@ -2273,7 +2256,7 @@ define ["./boot"],(sf)->
 
   ###
   Records a reported error message to $sf.info.errors and fires any listeners
-  
+
   @name $sf.host-_record_error
   @private
   @static
@@ -2318,7 +2301,7 @@ define ["./boot"],(sf)->
 
   ###
   Read a host domain cookie
-  
+
   @name $sf.host-_read_cookie
   @private
   @static
@@ -2351,7 +2334,7 @@ define ["./boot"],(sf)->
 
   ###
   Write a host domain cookie
-  
+
   @name $sf.host-_write_cookie
   @private
   @static
@@ -2391,7 +2374,7 @@ define ["./boot"],(sf)->
 
   ###
   Remove / destroy one or more SafeFrames from the publisher page
-  
+
   @name $sf.host.nuke
   @static
   @function
@@ -2444,7 +2427,7 @@ define ["./boot"],(sf)->
 
   ###
   Render one or more $sf.host.Position objects into the page
-  
+
   @name $sf.host.render
   @public
   @static
@@ -2482,7 +2465,7 @@ define ["./boot"],(sf)->
 
       return null
 
-    # if an array of positions is handed in use that instead 
+    # if an array of positions is handed in use that instead
     args = args[0]  if (args[0] instanceof Array) and args[LEN] is 1
     while pos = args[idx++]
       pos_id = pos.id
@@ -2590,7 +2573,7 @@ define ["./boot"],(sf)->
 
   ###
   Gets a copy of the Position configuration, content, and meta data for a given SafeFrame
-  
+
   @name $sf.host.get
   @public
   @function
@@ -2604,7 +2587,7 @@ define ["./boot"],(sf)->
 
   ###
   Returns a string as to whether or not the library is busy, empty string is returned on idle
-  
+
   @name $sf.host.status
   @public
   @function
@@ -2622,7 +2605,7 @@ define ["./boot"],(sf)->
       #			 * We got rid of the concept of a "host" file, and just put everything library wise for the host
       #			 * side into the main host file since it will save us some bytes
       #			 *
-      #			
+      #
       _rect = (if (ieVer) then _getRectIE else _getRectNonIE)
       _mix dom,
         rect: _rect

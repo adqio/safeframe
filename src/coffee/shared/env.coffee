@@ -1,4 +1,4 @@
-define [],() ->
+define ['./lang'],(lang) ->
   win = window
   navigator = window.navigator
   theDocument = window.document
@@ -175,7 +175,7 @@ define [],() ->
                 ret.gecko = _numberify(match)  if match
       try
         date.setTime date.getTime() + 1000
-        theDocument.cookie = cstr([
+        theDocument.cookie = lang.cstr([
           "sf_ck_tst=test; expires="
           date.toGMTString()
           "; path=/"

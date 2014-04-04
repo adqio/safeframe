@@ -183,8 +183,7 @@
 
 
 		</script>
-		<script type="text/javascript" src="../src/js/lib/base.js"></script>
-		<script type="text/javascript" src="../src/js/host/host.js"></script>
+        <script type="text/javascript" src="../lib/js/safeframe.host.js"></script>
 		
 		<script type="text/javascript" >
 
@@ -208,8 +207,8 @@
 					sf_host.conf	=
 					conf			=
 					{
-						renderFile: "../src/html/r.html",
-						hostFile:   "../src/js/host/host.js",
+						renderFile: "../lib/html/r.html",
+						hostFile:   "../lib/js/safeframe.host.js",
 	 					onStartPosRender: startRenderCallback,
 						onFailure: renderFailCallback,
 						onEndPosRender: endRenderCallback,

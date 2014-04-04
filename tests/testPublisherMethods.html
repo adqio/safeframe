@@ -3,8 +3,7 @@
 	<head>
 	<title>SafeFrame Publisher method tests</title>
 
-		<script type="text/javascript" src="../src/js/lib/base.js"></script>
-		<script type="text/javascript" src="../src/js/host/host.js"></script>
+        <script type="text/javascript" src="../lib/js/safeframe.host.js"></script>
 
 		<style type="text/css">
 		#feedback{
@@ -172,7 +171,7 @@ Keys MUST be inside double quote marks.  Javascript allows a much looser syntax 
 //					renderFile:		"http://10.72.227.43/iab/safeframes/src/html/r.html",
 			(function() {
 				var conf	= new $sf.host.Config({
-					renderFile:		"../src/html/r.html",
+					renderFile:		"../lib/html/r.html",
 					positions:
 					{
 						"LREC":

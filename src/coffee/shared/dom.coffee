@@ -1,4 +1,5 @@
 define ["./lang","./env"],(lang,env)->
+  dom = {}
   _lang = lang
   _env = env
   win = if window? then window else this
@@ -212,16 +213,16 @@ define ["./lang","./env"],(lang,env)->
   @return {Document|null} null if nothing found
   ###
   doc = (el) ->
-    d = null
+    localD = null
     try
       if el
         if el.nodeType is 9
-          d = el
+          localD = el
         else
-          d = el.document or el.ownerDocument or null
+          localD = el.document or el.ownerDocument or null
     catch e
-      d = null
-    d
+      localD = null
+    localD
 
   ###
   Retrieve the host window object for a given HTML Element/document. Note that this is NOT the same as $sf.lib.dom.iframes.view, which
@@ -237,15 +238,15 @@ define ["./lang","./env"],(lang,env)->
   ###
   view = (el) ->
     w = null
-    d = undefined
+    localD = undefined
     prop1 = "parentWindow"
     prop2 = "defaultView"
     try
       if el
         w = el[prop1] or el[prop2] or null
         unless w
-          d = doc(el)
-          w = (d and (d[prop1] or d[prop2])) or null
+          localD = doc(el)
+          w = (localD and (localD[prop1] or localD[prop2])) or null
     catch e
       w = null
     w
@@ -852,7 +853,7 @@ define ["./lang","./env"],(lang,env)->
   @return {HTMLWindow} the window reference inside the iframe.
   ###
   iframe_view = (el) ->
-    win = undefined
+    localWin = undefined
     elWin = undefined
     elDoc = undefined
     frame_list = undefined
@@ -862,7 +863,7 @@ define ["./lang","./env"],(lang,env)->
     e = undefined
     err = undefined
     try
-      win = el.contentWindow or null
+      localWin = el.contentWindow or null
 
       #
       #				 * We are allowed access, but sometimes, non-ie browser will report null
@@ -879,11 +880,11 @@ define ["./lang","./env"],(lang,env)->
           catch err
             fe = null
           if fe and fe is el
-            win = frame
+            localWin = frame
             break
     catch e
-      win = null
-    win
+      localWin = null
+    localWin
 
 
   #
@@ -930,7 +931,7 @@ define ["./lang","./env"],(lang,env)->
         ###
         gc = ->
           clearTimeout gc_timer_id  if gc_timer_id
-          gc_timer_id = setTimeout(->
+          gc_timer_ig setTimeout(->
             try
               win[GC]()
             return
@@ -1012,26 +1013,27 @@ define ["./lang","./env"],(lang,env)->
 #    return
 #  )()
   )()
-  doc: doc
-  view: view
-  elt: elt
-  tagName: tagName
-  tags: tags
-  par: par
-  make: make_element
-  css: css
-  attr: attr
-  gc: gc
-  append: append
-  purge: purge
-  attach: attach
-  detach: detach
-  ready: ready
-  wait: wait
-  evtCncl: evtCncl
-  evtTgt: evtTgt
-  iframes:
-    make: make_iframe
-    clone: clone_iframe
-    replace: replace_iframe
-    view: iframe_view
+  dom =
+    doc: doc
+    view: view
+    elt: elt
+    tagName: tagName
+    tags: tags
+    par: par
+    make: make_element
+    css: css
+    attr: attr
+    gc: gc
+    append: append
+    purge: purge
+    attach: attach
+    detach: detach
+    ready: ready
+    wait: wait
+    evtCncl: evtCncl
+    evtTgt: evtTgt
+    iframes:
+      make: make_iframe
+      clone: clone_iframe
+      replace: replace_iframe
+      view: iframe_view
