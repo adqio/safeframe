@@ -1,11 +1,12 @@
 {
-  "name": "viewability",
-  "version": "0.0.1",
+  "name": "safeframe",
+  "version": "1.1.0",
   "author": "Jason Fertel <jason@fer.tel>",
-  "description": "Ad viewability",
+  "description": "ad.js safeframe implementation",
+  "main":"lib/js/host.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adjs/viewability"
+    "url": "https://github.com/adjs/safeframe"
   },
   "license": "MIT",
   "devDependencies": {

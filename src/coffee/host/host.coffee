@@ -21,8 +21,9 @@
 ###
 @ignore
 ###
-define ["./boot"],(sf)->
-  win = if window? then window else @
+sf = require './boot'
+module.exports = do (window,sf)->
+  win = window
   DEFAULT_RENDER_TIMEOUT = 60000
   POS_ID_AUTO_PREFIX = "sf_pos"
   POS_REL_BOX_ID_PREFIX = "sf_pos_rel_el"
@@ -2646,3 +2647,4 @@ define ["./boot"],(sf)->
         render: render
         status: status
   sf
+

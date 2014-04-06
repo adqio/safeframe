@@ -25,9 +25,11 @@
 ###
 @ignore
 ###
-define ["../shared/base"],(sf)->
+sf = require "../shared/base"
 
-  win = if window? then window else @
+module.exports = do (window,sf)->
+
+  win = window
   LOAD = "load"
   ON_STR = "on"
   MSG = "message"

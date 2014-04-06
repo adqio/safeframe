@@ -1,3 +1,4 @@
-require ["./ext/ext"],  (sf) ->
+sf = require "./ext/ext"
+
+do (window,sf) ->
   window["$sf"] = sf
-,"sf.ext",true

@@ -1,5 +1,5 @@
-define [],->
-  win = if window? then window else @
+module.exports = do (window)->
+  win = window
 
   ###
   Write an entry to the console log and fire any log listeners

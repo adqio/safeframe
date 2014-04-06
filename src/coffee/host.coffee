@@ -1,4 +1,6 @@
 
-require ["./host/host"],  (sf) ->
+sf = require "./host/host"
+
+do (window,sf) ->
+
   window["$sf"] = sf
-,"sf.host",true

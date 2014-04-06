@@ -1,6 +1,6 @@
-define [], ->
+module.exports = do (window)->
   next_id = 0
-  win = if window? then window else this  #one reference to win
+  win = window #one reference to win
   backSlash = String.fromCharCode(92)
   scrip_str				= 'scr"+"ipt'
   _es     					=  win.escape

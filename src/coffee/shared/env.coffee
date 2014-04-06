@@ -1,4 +1,5 @@
-define ['./lang'],(lang) ->
+lang = require './lang'
+module.exports = do (window) ->
   win = window
   navigator = window.navigator
   theDocument = window.document

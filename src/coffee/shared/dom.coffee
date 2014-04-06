@@ -1,8 +1,10 @@
-define ["./lang","./env"],(lang,env)->
+lang = require './lang'
+env= require './env'
+module.exports = do (window,lang,env)->
   dom = {}
   _lang = lang
   _env = env
-  win = if window? then window else this
+  win = window
   IFRAME					= "iframe"
   GC						= "CollectGarbage"
   ie_attach				= "attachEvent"
