@@ -1,4 +1,5 @@
-sf = require "./ext/ext"
+sf = require("./ext/ext")(false)
 
-do (window,sf) ->
+module.exports = do (window,sf) ->
   window["$sf"] = sf
+  sf
