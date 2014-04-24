@@ -192,6 +192,9 @@ module.exports = do (window,sf)->
     me.onStartPosRender = (if _callable(conf.onStartPosRender) then conf.onStartPosRender else _noop)
     me.onEndPosRender = (if _callable(conf.onEndPosRender) then conf.onEndPosRender else _noop)
     me.onFailure = (if _callable(conf.onFailure) then conf.onFailure else _noop)
+    me.onAdLoad = (if _callable(conf.onAdLoad) then conf.onAdLoad else _noop)
+    me.onReadCookie = (if _callable(conf.onReadCookie) then conf.onReadCookie else _noop)
+    me.onWriteCookie = (if _callable(conf.onWriteCookie) then conf.onWriteCookie else _noop)
     conf_pos_map = conf.positions
     me.positions = pos_map = {}
     if conf_pos_map
@@ -1903,8 +1906,13 @@ module.exports = do (window,sf)->
           when "collapse"
             _collapse_safeframe msgObj
             true
-          when "msg"
-            _fire_pub_callback POS_MSG, msgObj.pos, "msg", msgObj.msg
+          when "msg","click","viewed","requested"
+            _fire_pub_callback POS_MSG, msgObj.pos,msgObj.cmd, msgObj.msg
+            _send_generic_response msgObj.pos,msgObj.cmd
+            true
+          when "loaded"
+            _fire_pub_callback "onAdLoad",msgObj.pos,msgObj
+            _send_generic_response msgObj.pos,msgObj.cmd
             true
           when ERROR_COMMAND
             _record_error msgObj
@@ -1916,6 +1924,7 @@ module.exports = do (window,sf)->
             canRead = info.conf and info.conf.supports and info.conf.supports[msgObj.cmd] and info.conf.supports[msgObj.cmd] isnt "0"
             if canRead
               _read_cookie msgObj
+              _fire_pub_callback "onCookieRead",msgObj.pos,msgObj.cookie
               true
             else
               false
@@ -1923,6 +1932,7 @@ module.exports = do (window,sf)->
             canWrite = info.conf and info.conf.supports and info.conf.supports[msgObj.cmd] and info.conf.supports[msgObj.cmd] isnt "0"
             if canWrite
               _write_cookie msgObj
+              _fire_pub_callback "onCookieWrite",msgObj.pos,msgObj.cookie
               true
             else
               false
@@ -2598,6 +2608,24 @@ module.exports = do (window,sf)->
   status = ->
     current_status
 
+  _send_generic_response  = (posID,command)->
+    msgObj = new ParamHash()
+    params = (posID and rendered_ifrs[posID])
+    msgObj.cmd = command
+    msgObj.pos = posID
+    _send_response params, msgObj
+
+  _getGeom = (posID)->
+    params = rendered_ifrs[posID]
+    id = (params and params.dest)
+    ifr = (id and _elt(id))
+    g = _build_geom(posID, ifr, true)
+    g
+  inViewPercentage = (posID) ->
+    geom_info = _getGeom(posID)
+    iv = _cnum(geom_info?.self?.iv, -1, 0)
+    tv = Math.floor(iv * 100)  if iv >= 0
+    tv
 
   if lang
     if win is top
@@ -2646,5 +2674,7 @@ module.exports = do (window,sf)->
         get: get
         render: render
         status: status
+        inViewPercentage: inViewPercentage
+
   sf
 

@@ -57,6 +57,10 @@ module.exports = (isExternal)->
     NOTIFY_FAILURE = "failed"
     NOTIFY_READ_COOKIE = "read-cookie"
     NOTIFY_WRITE_COOKIE = "write-cookie"
+    NOTIFY_CLICKED = "clicked"
+    NOTIFY_VIEWED = "viewed"
+    NOTIFY_LOADED = "loaded"
+    NOTIFY_REQUESTED = "requested"
     STATUS_COLLAPSED = NOTIFY_COLLAPSED
     STATUS_EXPANDED = NOTIFY_EXPAND + "ed"
     STATUS_COLLAPSING = "collapsing"
@@ -113,6 +117,7 @@ module.exports = (isExternal)->
     w3c_old_attach = undefined
     ie_old_detach = undefined
     w3c_old_detach = undefined
+    isAdShown =false
 
 
     #
@@ -758,11 +763,19 @@ module.exports = (isExternal)->
     @static
     @private
     ###
-    _render = ->
+    _render =(callback=->) ->
 
       # The internal method that does the document.write of ad content
+      cbName = lib.lang.guid("load_cb")
+      window[cbName] = sf.lib.lang.wrap callback, ->
+        delete window[cbName]
+        callback.apply(sf,arguments)
+        _reattach_messaging() #dealing with a bug I couldn't find in this
+        _handle_load()
+        loaded()
       html = undefined
       css = undefined
+      isAdShown = true
       css = _cstr(render_conf and render_conf.css)
       html = _cstr(render_params and render_params.html)
       if css
@@ -771,7 +784,8 @@ module.exports = (isExternal)->
       if html
         html = _ue(html)
         try
-          document.write html
+          document.write html + "<scr"+
+          "ipt> #{cbName}() ;</scr"+"ipt>"
           _check_orphaned()
           _reset_inline_handlers()
         catch e
@@ -868,21 +882,20 @@ module.exports = (isExternal)->
         ret = true
         if pending_msg
           pending_msg = null
-          is_expanded = true
           data = params and params.value
           _fire_sandbox_callback NOTIFY_READ_COOKIE, data
-      else if cmd is NOTIFY_WRITE_COOKIE
+      else if [NOTIFY_WRITE_COOKIE,NOTIFY_FAILURE,
+               NOTIFY_CLICKED,NOTIFY_VIEWED,NOTIFY_LOADED,NOTIFY_REQUESTED].indexOf(cmd) > -1
         ret = true
         if pending_msg
           pending_msg = null
-          is_expanded = true
-          _fire_sandbox_callback NOTIFY_WRITE_COOKIE, data
-      else if cmd is NOTIFY_FAILURE
+          _fire_sandbox_callback cmd, data
+      else
         ret = true
         if pending_msg
           pending_msg = null
-          is_expanded = true
-          _fire_sandbox_callback NOTIFY_FAILURE, data
+          _fire_sandbox_callback cmd, data
+
       params = null
       ret
 
@@ -946,7 +959,7 @@ module.exports = (isExternal)->
     _fire_sandbox_callback = (msg, data) ->
       e = undefined
       try
-        sandbox_cb msg, data
+        sandbox_cb? msg, data
       return
 
     ###
@@ -1009,6 +1022,15 @@ module.exports = (isExternal)->
       return false  if not force_collapse and (not is_registered or not is_expanded or pending_msg)
       _set_alignment 0, 0
       true
+    #hack to deal with bug...
+    _reattach_messaging = ->
+        if ie_old_attach
+          ie_old_detach ONMSG,_handle_msg
+          ie_old_attach ONMSG,_handle_msg
+        else if w3c_old_attach
+          w3c_old_detach MSG,_handle_msg
+          w3c_old_attach MSG,_handle_msg
+
 
     ###
     Intialize the SafeFrame external vendor/client API, so that other features may be used
@@ -1023,7 +1045,7 @@ module.exports = (isExternal)->
     @param {Function} [notify] A callback function that content can specify to be notified of status updates
     ###
     register = (initWidth, initHeight, notify) ->
-      return  if is_registered or not guid
+      return  if is_registered  or not guid
       initWidth = _cnum(initWidth, 0, 0)
       initHeight = _cnum(initHeight, 0, 0)
       init_width = initWidth
@@ -1171,6 +1193,28 @@ module.exports = (isExternal)->
           pos_id
         ]), COLLAPSE_COMMAND
       return
+    click = ->
+      _send_cmd NOTIFY_CLICKED
+    viewed = ->
+      _send_cmd NOTIFY_VIEWED
+    loaded =->
+      _send_cmd NOTIFY_LOADED
+
+    _send_cmd =(cmd)->
+      _send_msg _cstr([
+        "cmd="
+        cmd
+        "&pos="
+        pos_id
+      ]),cmd
+    _requested =->
+      _send_msg _cstr([
+        "cmd="
+        NOTIFY_REQUESTED
+        "&pos="
+        pos_id
+      ]),NOTIFY_REQUESTED
+
 
     ###
     Return geometric information about the SafeFrame container and it's status within a page
@@ -1324,10 +1368,18 @@ module.exports = (isExternal)->
           sup = lang.mix({}, sup)
       sup
     # for our version that integrates with advertiser.ad.js
-    render = ()->
+    render = (showAd,cb)->
       err_info = {}
       if _construction(err_info)
-        _render()
+        if showAd
+          _render(cb)
+
+    showAd = (cb)->
+      unless isAdShown
+        _render(cb)
+    adShown = ()->
+      isAdShown
+
     #
     #	 * --END-External Vendor/Client API
     #	 *
@@ -1344,6 +1396,10 @@ module.exports = (isExternal)->
       message: message
       inViewPercentage: inViewPercentage
       winHasFocus: winHasFocus
+      click: click
+      viewed: viewed
+      showAd: showAd
+      adShown: adShown
 
     if !isExternal
       window.$sf = sf

@@ -51,7 +51,7 @@ module.exports = do (window)->
   @return {Boolean} The normalized boolean value
   ###
   cbool = (val) ->
-    not ([undefined,"0","false","no","undefined","null",null].indexOf(val)>=0 or false)
+    (if (not val or val is "0" or val is "false" or val is "no" or val is "undefined" or val is "null") then false else true)
   _keys = (obj)->
     Object.keys?(obj) or (k for k,_v of obj)
 
@@ -312,6 +312,26 @@ module.exports = do (window)->
     return true  if obj.length? and obj.constructor is Array
     false
 
+  ###
+  Checks for the existence of a JavaScript namespace
+  as opposed to def, which will automatically define the namespace
+  with a given context.         via underscore.js
+
+  @memberOf $sf.lib.lang
+  @exports ns as $sf.lib.lang.wrap
+  @param {Function} function to be wrapped
+  @param {Function} wrapper function
+  @return {Function}
+  @public
+  @function
+  @static
+  ###
+  wrap = (func, wrapper) ->
+    ->
+      args = [func]
+      Array::push.apply args, arguments
+      wrapper.apply this, args
+
 
   ###
   Given a string of HTML escape quote marks and seperate script tags so that browsers don't get tripped up
@@ -564,6 +584,7 @@ module.exports = do (window)->
     ns: ns
     jssafe_html: jssafe_html
     isArray: isArray
+    wrap: wrap
 
   if exports?
     exports.lang = lang
