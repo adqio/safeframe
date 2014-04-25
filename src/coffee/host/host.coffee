@@ -338,8 +338,12 @@ module.exports = do (window,sf)->
       obj.shared = shared
       obj.non_shared = non_shared
 
-      #json.stringify
       obj.toString()
+    set_value = (propKey,ownerKey,value)->
+      non_shared[ownerKey] or= {}
+      non_shared[ownerKey][propKey] = value
+
+
     me = this
     shared = undefined
     non_shared = undefined
@@ -353,6 +357,7 @@ module.exports = do (window,sf)->
     non_shared[owner_key] = owned_obj  if owned_obj and typeof owned_obj is OBJ
     me.toString = serialize
     me.value = get_value
+    me.setValue = set_value
     return
 
   ###

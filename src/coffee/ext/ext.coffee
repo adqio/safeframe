@@ -887,14 +887,12 @@ module.exports = (isExternal)->
       else if [NOTIFY_WRITE_COOKIE,NOTIFY_FAILURE,
                NOTIFY_CLICKED,NOTIFY_VIEWED,NOTIFY_LOADED,NOTIFY_REQUESTED].indexOf(cmd) > -1
         ret = true
-        if pending_msg
-          pending_msg = null
-          _fire_sandbox_callback cmd, data
+        pending_msg = null if pending_msg
+        _fire_sandbox_callback cmd, data
       else
         ret = true
-        if pending_msg
-          pending_msg = null
-          _fire_sandbox_callback cmd, data
+        pending_msg = null if pending_msg
+        _fire_sandbox_callback cmd, data
 
       params = null
       ret
