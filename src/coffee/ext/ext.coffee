@@ -59,6 +59,7 @@ module.exports = (isExternal)->
     NOTIFY_WRITE_COOKIE = "write-cookie"
     NOTIFY_CLICKED = "clicked"
     NOTIFY_VIEWED = "viewed"
+    NOTIFY_UNVIEWED = "unviewed"
     NOTIFY_LOADED = "loaded"
     NOTIFY_REQUESTED = "requested"
     STATUS_COLLAPSED = NOTIFY_COLLAPSED
@@ -90,7 +91,7 @@ module.exports = (isExternal)->
     _attach = (dom and dom.attach)
     _detach = (dom and dom.detach)
     _attr = (dom and dom.attr)
-    loaded = false
+    hasLoaded = false
     is_expanded = false
     force_collapse = false
     is_registered = false
@@ -193,7 +194,7 @@ module.exports = (isExternal)->
         if w3c_old_attach
           w[W3C_ATTACH] = w3c_old_attach
           w[W3C_DETACH] = w3c_old_detach
-      _detach w, LOAD, _handle_load  unless loaded
+      _detach w, LOAD, _handle_load  unless hasLoaded
       _detach w, UNLOAD, _handle_unload
       try
         w.onerror = null
@@ -378,7 +379,7 @@ module.exports = (isExternal)->
     ###
     _handle_load = ->
       return  if loaded
-      loaded = true
+      hasLoaded = true
       _detach win, LOAD, _handle_load
       _set_hyperlink_targets()
       return
@@ -754,7 +755,22 @@ module.exports = (isExternal)->
         render_params = guid = null
         ret = false
       ret
+    _wrapiFrame = (html,cbName)->
+      """
+        <iframe style="width:100%;height:100%;" allowtransparency="true"
+        scrolling="no" marginwidth="0" marginheight="0" frameborder="0" onload='#{cbName}()'>
+        <html><head><base target="_top"></head><body style="margin: 0; padding: 0">
+        <script>
+          $ad = window.parent.$ad
+          $sf = window.parent.$sf
+        </script>
+          #{html}
+        </html>
+        </iframe>
+      """
 
+
+    originalWrite = document.write
     ###
     Render the HTML and CSS content passed in through the window.name message via a document.write
 
@@ -767,12 +783,30 @@ module.exports = (isExternal)->
 
       # The internal method that does the document.write of ad content
       cbName = lib.lang.guid("load_cb")
-      window[cbName] = sf.lib.lang.wrap callback, ->
-        delete window[cbName]
-        callback.apply(sf,arguments)
-        _reattach_messaging() #dealing with a bug I couldn't find in this
-        _handle_load()
-        loaded()
+      otherCallbackApplied = false
+      window[cbName] = (fromFrame)->
+        (sf.lib.lang.wrap callback,()->
+          if fromFrame || !otherCallbackApplied
+            callback.apply(sf,arguments)
+            _reattach_messaging() #dealing with a bug I couldn't find in this
+            _handle_load()
+            loaded()
+            document.write = originalWrite
+            delete window[cbName])()
+      document.write = (str)->
+        unless hasLoaded or otherCallbackApplied
+          domElem = document.createElement("div")
+          domElem.innerHTML = "_"+str #add something visible at the beginning to deal with ie<9 bug
+          for iframe in domElem.getElementsByTagName("iframe")
+            if _cnum(_attr(iframe,"width"),0)>1
+              otherCallbackApplied = true
+              if oldOnload = _attr(iframe,"onload")
+                _attr(iframe,"onload","#{cbName}(true);#{oldOnload};")
+              else
+                _attr(iframe,"onload","#{cbName}(true);")
+              break
+          str = domElem.innerHTML.substring(1) if otherCallbackApplied
+        originalWrite.call(this,str)
       html = undefined
       css = undefined
       isAdShown = true
@@ -784,8 +818,7 @@ module.exports = (isExternal)->
       if html
         html = _ue(html)
         try
-          document.write html + "<scr"+
-          "ipt> #{cbName}() ;</scr"+"ipt>"
+          document.write html + "<scr"+"ipt> #{cbName}() ;</scr"+"ipt>"
           _check_orphaned()
           _reset_inline_handlers()
         catch e
@@ -885,7 +918,7 @@ module.exports = (isExternal)->
           data = params and params.value
           _fire_sandbox_callback NOTIFY_READ_COOKIE, data
       else if [NOTIFY_WRITE_COOKIE,NOTIFY_FAILURE,
-               NOTIFY_CLICKED,NOTIFY_VIEWED,NOTIFY_LOADED,NOTIFY_REQUESTED].indexOf(cmd) > -1
+               NOTIFY_CLICKED,NOTIFY_VIEWED,NOTIFY_UNVIEWED,NOTIFY_LOADED,NOTIFY_REQUESTED].indexOf(cmd) > -1
         ret = true
         pending_msg = null if pending_msg
         _fire_sandbox_callback cmd, data
@@ -1197,6 +1230,8 @@ module.exports = (isExternal)->
       _send_cmd NOTIFY_VIEWED
     loaded =->
       _send_cmd NOTIFY_LOADED
+    unviewed =->
+      _send_cmd NOTIFY_UNVIEWED
 
     _send_cmd =(cmd)->
       _send_msg _cstr([
@@ -1396,8 +1431,10 @@ module.exports = (isExternal)->
       winHasFocus: winHasFocus
       click: click
       viewed: viewed
+      unviewed: unviewed
       showAd: showAd
       adShown: adShown
+
 
     if !isExternal
       window.$sf = sf

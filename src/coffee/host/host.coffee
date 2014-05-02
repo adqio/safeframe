@@ -1911,7 +1911,7 @@ module.exports = do (window,sf)->
           when "collapse"
             _collapse_safeframe msgObj
             true
-          when "msg","click","viewed","requested"
+          when "msg","clicked","viewed","requested","unviewed"
             _fire_pub_callback POS_MSG, msgObj.pos,msgObj.cmd, msgObj.msg
             _send_generic_response msgObj.pos,msgObj.cmd
             true
