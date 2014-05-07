@@ -62,6 +62,7 @@ module.exports = (isExternal)->
     NOTIFY_UNVIEWED = "unviewed"
     NOTIFY_LOADED = "loaded"
     NOTIFY_REQUESTED = "requested"
+    NOTIFY_RELOAD = "reload"
     STATUS_COLLAPSED = NOTIFY_COLLAPSED
     STATUS_EXPANDED = NOTIFY_EXPAND + "ed"
     STATUS_COLLAPSING = "collapsing"
@@ -788,7 +789,7 @@ module.exports = (isExternal)->
         (sf.lib.lang.wrap callback,()->
           if fromFrame || !otherCallbackApplied
             callback.apply(sf,arguments)
-            _reattach_messaging() #dealing with a bug I couldn't find in this
+#            _reattach_messaging() #dealing with a bug I couldn't find in this
             _handle_load()
             loaded()
             document.write = originalWrite
@@ -818,6 +819,8 @@ module.exports = (isExternal)->
       if html
         html = _ue(html)
         try
+          _reattach_messaging()
+          _requested()
           document.write html + "<scr"+"ipt> #{cbName}() ;</scr"+"ipt>"
           _check_orphaned()
           _reset_inline_handlers()
@@ -918,7 +921,7 @@ module.exports = (isExternal)->
           data = params and params.value
           _fire_sandbox_callback NOTIFY_READ_COOKIE, data
       else if [NOTIFY_WRITE_COOKIE,NOTIFY_FAILURE,
-               NOTIFY_CLICKED,NOTIFY_VIEWED,NOTIFY_UNVIEWED,NOTIFY_LOADED,NOTIFY_REQUESTED].indexOf(cmd) > -1
+               NOTIFY_CLICKED,NOTIFY_VIEWED,NOTIFY_UNVIEWED,NOTIFY_LOADED,NOTIFY_REQUESTED,NOTIFY_RELOAD].indexOf(cmd) > -1
         ret = true
         pending_msg = null if pending_msg
         _fire_sandbox_callback cmd, data
@@ -930,6 +933,9 @@ module.exports = (isExternal)->
       params = null
       ret
 
+
+
+    cmdRetries = {}
     ###
     Send a command message up to the SafeFrames publisher / host code
 
@@ -946,7 +952,14 @@ module.exports = (isExternal)->
       sent = false
       sent_time = lang.time()
       params = undefined
-      return  if not str or not cmd or pending_msg
+      if not str or not cmd or pending_msg
+        #        cmdRetries[cmd] or=0
+        #        if pending_msg && cmdRetries[cmd] <3
+        #          cmdRetries[cmd]++
+        #          setTimeout((->_send_msg(str,cmd)),5)
+        return
+        #      else
+        #        delete cmdRetries[cmd]
       params = ParamHash(
         msg: str
         id: frame_id
@@ -1055,12 +1068,12 @@ module.exports = (isExternal)->
       true
     #hack to deal with bug...
     _reattach_messaging = ->
-        if ie_old_attach
-          ie_old_detach ONMSG,_handle_msg
-          ie_old_attach ONMSG,_handle_msg
-        else if w3c_old_attach
-          w3c_old_detach MSG,_handle_msg
-          w3c_old_attach MSG,_handle_msg
+      if ie_old_attach
+        ie_old_detach ONMSG,_handle_msg
+        ie_old_attach ONMSG,_handle_msg
+      else if w3c_old_attach
+        w3c_old_detach MSG,_handle_msg
+        w3c_old_attach MSG,_handle_msg
 
 
     ###
@@ -1232,6 +1245,13 @@ module.exports = (isExternal)->
       _send_cmd NOTIFY_LOADED
     unviewed =->
       _send_cmd NOTIFY_UNVIEWED
+    reload = ->
+      _send_cmd NOTIFY_RELOAD
+    _requested =->
+      _fire_sandbox_callback NOTIFY_REQUESTED
+      _send_cmd NOTIFY_REQUESTED
+
+
 
     _send_cmd =(cmd)->
       _send_msg _cstr([
@@ -1240,14 +1260,6 @@ module.exports = (isExternal)->
         "&pos="
         pos_id
       ]),cmd
-    _requested =->
-      _send_msg _cstr([
-        "cmd="
-        NOTIFY_REQUESTED
-        "&pos="
-        pos_id
-      ]),NOTIFY_REQUESTED
-
 
     ###
     Return geometric information about the SafeFrame container and it's status within a page
@@ -1284,6 +1296,17 @@ module.exports = (isExternal)->
           shared = pos_meta.shared
           ret = _cstr(shared[propName])  if shared and typeof shared is OBJ
       ret
+    deleteMeta = (propName,owner_key)->
+      shared = undefined
+      if pos_meta
+        if owner_key
+          if owner_key of pos_meta
+            delete pos_meta[owner_key][propName]
+          else delete pos_meta.non_shared[owner_key][propName]  if pos_meta.non_shared and owner_key of pos_meta.non_shared
+        else
+          shared = pos_meta.shared
+          delete shared[propName]  if shared and typeof shared is OBJ
+
 
     ###
     Return the current status of the SafeFrame container, in cases where
@@ -1413,6 +1436,8 @@ module.exports = (isExternal)->
     adShown = ()->
       isAdShown
 
+
+
     #
     #	 * --END-External Vendor/Client API
     #	 *
@@ -1423,6 +1448,7 @@ module.exports = (isExternal)->
       collapse: collapse
       geom: geom
       meta: meta
+      deleteMeta: deleteMeta
       status: status
       supports: supports
       cookie: cookie
@@ -1434,6 +1460,7 @@ module.exports = (isExternal)->
       unviewed: unviewed
       showAd: showAd
       adShown: adShown
+      reload: reload
 
 
     if !isExternal
