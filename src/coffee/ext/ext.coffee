@@ -790,8 +790,17 @@ module.exports = (isExternal)->
           if fromFrame || !otherCallbackApplied
             callback.apply(sf,arguments)
 #            _reattach_messaging() #dealing with a bug I couldn't find in this
-            _handle_load()
-            loaded()
+            #hack to deal with safeframes lack of a message queue
+            #todo create safeframe msg queue
+            if pending_msg
+              setTimeout =>
+                _handle_load()
+                loaded()
+              ,300
+            else
+              _handle_load()
+              loaded()
+
             document.write = originalWrite
             delete window[cbName])()
       document.write = (str)->
