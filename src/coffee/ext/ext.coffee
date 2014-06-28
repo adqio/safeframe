@@ -100,6 +100,7 @@ module.exports = (isExternal)->
     init_height = 0
     sandbox_cb = null
     pending_msg = null
+    messageQueue = []
     geom_info = null
     pos_meta = null
     win_has_focus = false
@@ -791,16 +792,8 @@ module.exports = (isExternal)->
             callback.apply(sf,arguments)
 #            _reattach_messaging() #dealing with a bug I couldn't find in this
             #hack to deal with safeframes lack of a message queue
-            #todo create safeframe msg queue
-            if pending_msg
-              setTimeout =>
-                _handle_load()
-                loaded()
-              ,300
-            else
-              _handle_load()
-              loaded()
-
+            _handle_load()
+            loaded()
             document.write = originalWrite
             delete window[cbName])()
       document.write = (str)->
@@ -903,20 +896,22 @@ module.exports = (isExternal)->
           _collapse()
           force_collapse = false
           _fire_sandbox_callback NOTIFY_COLLAPSED
+          _shiftMessageQueue()
       else if cmd is NOTIFY_COLLAPSE
-
         #Y.SandBox.vendor.collapse was called, notify
         ret = true
         if is_expanded
           pending_msg = null
           is_expanded = false
           _fire_sandbox_callback NOTIFY_COLLAPSED
+          _shiftMessageQueue()
       else if cmd is NOTIFY_EXPAND
         ret = true
         if pending_msg
           pending_msg = null
           is_expanded = true
           _fire_sandbox_callback NOTIFY_EXPAND + "ed"
+          _shiftMessageQueue()
       else if cmd is NOTIFY_GEOM_UPDATE
         _fire_sandbox_callback NOTIFY_GEOM_UPDATE
       else if cmd is NOTIFY_FOCUS_CHANGE
@@ -929,22 +924,33 @@ module.exports = (isExternal)->
           pending_msg = null
           data = params and params.value
           _fire_sandbox_callback NOTIFY_READ_COOKIE, data
+          _shiftMessageQueue()
       else if [NOTIFY_WRITE_COOKIE,NOTIFY_FAILURE,
                NOTIFY_CLICKED,NOTIFY_VIEWED,NOTIFY_UNVIEWED,NOTIFY_LOADED,NOTIFY_REQUESTED,NOTIFY_RELOAD].indexOf(cmd) > -1
         ret = true
         pending_msg = null if pending_msg
         _fire_sandbox_callback cmd, data
+        _shiftMessageQueue()
       else
         ret = true
         pending_msg = null if pending_msg
         _fire_sandbox_callback cmd, data
-
+        _shiftMessageQueue()
       params = null
       ret
 
 
 
     cmdRetries = {}
+    ###
+    ###
+    _shiftMessageQueue = ()->
+      if result = messageQueue.shift()
+        _send_msg.apply(@,result)
+
+
+
+
     ###
     Send a command message up to the SafeFrames publisher / host code
 
@@ -962,13 +968,8 @@ module.exports = (isExternal)->
       sent_time = lang.time()
       params = undefined
       if not str or not cmd or pending_msg
-        #        cmdRetries[cmd] or=0
-        #        if pending_msg && cmdRetries[cmd] <3
-        #          cmdRetries[cmd]++
-        #          setTimeout((->_send_msg(str,cmd)),5)
+        messageQueue.push([str,cmd]) if pending_msg
         return
-        #      else
-        #        delete cmdRetries[cmd]
       params = ParamHash(
         msg: str
         id: frame_id
@@ -988,6 +989,7 @@ module.exports = (isExternal)->
             force_collapse = false
           _fire_sandbox_callback NOTIFY_FAILURE + ":" + cmd + ":timeout"
         id = sent = sent_time = cmd = str = pending_msg = params = null
+        _shiftMessageQueue()
         return
       ), MAX_MSG_WAIT_TIME
       if can_use_html5

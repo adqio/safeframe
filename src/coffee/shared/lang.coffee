@@ -52,7 +52,7 @@ module.exports = do (window)->
   ###
   cbool = (val) ->
     (if (not val or val is "0" or val is "false" or val is "no" or val is "undefined" or val is "null") then false else true)
-  _keys = (obj)->
+  keys = (obj)->
     Object.keys?(obj) or (k for k,_v of obj)
 
   ###
@@ -355,7 +355,7 @@ module.exports = do (window)->
       '"': '&quot;'
       "'": '&#x27;'
   entityRegexes =
-    escape:   new RegExp('[' + _keys(entityMap.escape).join('') + ']', 'g')
+    escape:   new RegExp('[' + keys(entityMap.escape).join('') + ']', 'g')
 #    unescape: new RegExp('(' + _.keys(entityMap.unescape).join('|') + ')', 'g')
 
   jssafe_html = (str)->
@@ -585,6 +585,7 @@ module.exports = do (window)->
     jssafe_html: jssafe_html
     isArray: isArray
     wrap: wrap
+    keys: keys
 
   if exports?
     exports.lang = lang
