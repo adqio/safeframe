@@ -245,6 +245,7 @@ module.exports = do (window,sf)->
       me.w = _cnum(posIDorObj.w, 0)
       me.h = _cnum(posIDorObj.h, 0)
       me.z = _cnum(posIDorObj.z, 0)
+      me.renderFile = _cstr(posIDorObj.renderFile) or null
       me.supports = _mix({}, posIDorObj.supports or SUPPORTS_FEATURES, true, true, true)
       if not me.w or not me.h
         sz = _cstr(posIDorObj.size)
@@ -2567,7 +2568,7 @@ module.exports = do (window,sf)->
             name_params.meta = pos.meta.toString()
             name_params.html = _es(pos.html)
             name_params.geom = _es(_build_geom(pos_id, dest_el))
-            name_params.src = config.renderFile
+            name_params.src = pos_conf.renderFile or config.renderFile
             name_params.has_focus = lang.cstr(document.hasFocus())
             css_txt[1] = finalCSSPos
             css_txt[13] = finalCSSEnd
@@ -2581,7 +2582,7 @@ module.exports = do (window,sf)->
             iframes.replace
               id: dest_id
               name: name_params
-              src: config.renderFile
+              src: pos_conf.renderFile or config.renderFile
               _pos_id: pos_id
             , css_txt, rel_el, _handle_frame_load, _handle_msg_evt
             rendered_ifrs[pos_id] = name_params
