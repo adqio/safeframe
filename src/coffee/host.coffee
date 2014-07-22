@@ -1,5 +1,5 @@
 
-sf = require "./host/host"
+sf = require("./host/host")(false)
 
 do (window,sf) ->
 

@@ -781,7 +781,7 @@ module.exports = (isExternal)->
     @static
     @private
     ###
-    _render =(callback=->) ->
+    _render =(contentOverride,callback=->) ->
 
       # The internal method that does the document.write of ad content
       cbName = lib.lang.guid("load_cb")
@@ -814,7 +814,7 @@ module.exports = (isExternal)->
       css = undefined
       isAdShown = true
       css = _cstr(render_conf and render_conf.css)
-      html = _cstr(render_params and render_params.html)
+      html = contentOverride or _cstr(render_params and render_params.html)
       if css
         css = _ue(css)
         _create_stylesheet css, "sf_custom_css"
@@ -1435,15 +1435,15 @@ module.exports = (isExternal)->
           sup = lang.mix({}, sup)
       sup
     # for our version that integrates with advertiser.ad.js
-    render = (showAd,cb)->
+    render = (showAd,contentOverride,cb)->
       err_info = {}
       if _construction(err_info)
         if showAd
-          _render(cb)
+          _render(contentOverride,cb)
 
-    showAd = (cb)->
+    showAd = (contentOverride,cb)->
       unless isAdShown
-        _render(cb)
+        _render(contentOverride,cb)
     adShown = ()->
       isAdShown
 

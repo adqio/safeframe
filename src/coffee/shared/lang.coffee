@@ -354,13 +354,19 @@ module.exports = do (window)->
       '>': '&gt;'
       '"': '&quot;'
       "'": '&#x27;'
+  entityMap.unescape = {}
+  entityMap.unescape[v] = k for k,v of entityMap.escape
+
   entityRegexes =
     escape:   new RegExp('[' + keys(entityMap.escape).join('') + ']', 'g')
-#    unescape: new RegExp('(' + _.keys(entityMap.unescape).join('|') + ')', 'g')
+    unescape: new RegExp('(' + keys(entityMap.unescape).join('|') + ')', 'g')
 
   jssafe_html = (str)->
-    return '' if not str?
-    return ('' + string).replace(entityRegexes.escape, (match)-> entityMap.escape[match])
+    return '' unless str?
+    ("#{str}").replace(entityRegexes.escape, (match)-> entityMap.escape[match])
+  jsunsafe_html = (str)->
+    return '' unless str?
+    ("#{str}").replace(entityRegexes.unescape, (match)-> entityMap.unescape[match])
 
 #  jssafe_html = (str) ->
 #    new_str = cstr(str)
@@ -583,6 +589,7 @@ module.exports = do (window)->
     def: def
     ns: ns
     jssafe_html: jssafe_html
+    jsunsafe_html: jsunsafe_html
     isArray: isArray
     wrap: wrap
     keys: keys
