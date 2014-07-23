@@ -2377,9 +2377,13 @@ module.exports = (allowNotTop = false)->
       key = msgObj.cookie
       return  unless key
       newValue = escape(msgObj.value)
-      exdate = new Date()
-      exdate.setDate exdate.getDate() + 1
-      c_value = newValue + "; expires=" + exdate.toUTCString()
+      if msgObj.expires
+        exdate = new Date(_cnum(msgObj.expires))
+      else
+        exdate = new Date()
+        exdate.setDate exdate.getDate() + 1
+
+      c_value = newValue + "; path=/; expires=" + exdate.toUTCString()
       document.cookie = key + "=" + c_value
       _fire_pub_callback POS_MSG, command, posID, 0, 0
       msgObj.cmd = command

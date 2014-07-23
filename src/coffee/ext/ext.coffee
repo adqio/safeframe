@@ -1365,6 +1365,7 @@ module.exports = (isExternal)->
       unless isRead
         cmd_str.push "&value="
         cmd_str.push cookieData.value
+        cmd_str.push "&expires=#{+cookieData.expires}" if cookieData.expires
       _send_msg _cstr(cmd_str), cmd_nm
       return
 
