@@ -795,7 +795,9 @@ module.exports = (isExternal)->
             _handle_load()
             loaded()
             document.write = originalWrite
-            delete window[cbName])()
+            #todo: figure out why this
+            window[cbName]= lang.noop
+        )()
       document.write = (str)->
         unless hasLoaded or otherCallbackApplied
           domElem = document.createElement("div")
