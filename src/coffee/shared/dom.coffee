@@ -200,7 +200,6 @@ module.exports = do (window,lang,env)->
       iframe_msg_host_lib = dom.msghost  unless iframe_msg_host_lib
     catch e
       iframe_msg_host_lib = null
-    return  unless win is top
     methName and iframe_msg_host_lib and iframe_msg_host_lib[methName] and iframe_msg_host_lib[methName](arg1, arg2, arg3)
 
   ###

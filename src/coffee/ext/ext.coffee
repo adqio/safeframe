@@ -27,7 +27,7 @@
 ###
 sf = require "../shared/base"
 
-module.exports = (isExternal)->
+module.exports = (isExternal,canNest)->
   return do (window,sf)->
 
     win = window
@@ -678,7 +678,7 @@ module.exports = (isExternal)->
       #		 *
       #
       try
-        if top is par
+        if top is par or canNest
           render_params = ParamHash(nm, null, null, true, true)
           cur_time = lang.time()
           guid = render_params.guid

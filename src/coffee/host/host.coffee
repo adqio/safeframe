@@ -92,7 +92,7 @@ module.exports = (allowNotTop = false)->
     _cstr = lang.cstr
     _callable = lang.callable
     _noop = lang.noop
-    _guid = lang[GUID]
+    _guid = lang.guid
     _mix = lang.mix
     _elt = dom.elt
     _par = dom.par
@@ -1396,8 +1396,8 @@ module.exports = (allowNotTop = false)->
       ifr = tgtID and _elt(tgtID)
       fr_win = ifr and _ifr_view(ifr)
       pipe = tgtID and msg_pipes[tgtID]
-      dataGUID = params and params[GUID]
-      pipeGUID = pipe and pipe[GUID]
+      dataGUID = params and params.guid
+      pipeGUID = pipe and pipe.guid
       cb = pipe and pipe._xmsgcb
       ret = false
       if pipeGUID and dataGUID and dataGUID is pipeGUID and msg_win and fr_win and fr_win is msg_win
@@ -1509,7 +1509,7 @@ module.exports = (allowNotTop = false)->
         pipe.id = attrs.id or ("iframe_" + _guid())
         pipe.src = src
         pipe.srcHost = srcHost
-        pipe[GUID] = pipe[GUID] or _guid()
+        pipe.guid = pipe.guid or _guid()
         pipe.host = locHost
         pipe.loc = locStripped
         pipe.proxyID = ""
@@ -1574,7 +1574,7 @@ module.exports = (allowNotTop = false)->
       id = ""
       for id of msg_pipes
         pipe = msg_pipes[id]
-        if pipe and pipe[GUID]
+        if pipe and pipe.guid
           empty = false
           break
       if empty and usingHTML5() and html5Bound
@@ -2661,12 +2661,21 @@ module.exports = (allowNotTop = false)->
         ###
         (->
           e = undefined
+
+          #wrap every method to break if its not top and top not allowed - as per spec...
           dom.msghost =
             prep: prep_iframe_msging
             attach: attach_iframe_msging
             detach: detach_iframe_msging
             usingHTML5: usingHTML5
             send: send_msg_to_child_iframe
+          for k,v of dom.msghost
+            dom.msghost[k] = lang.wrap v,(f)->
+              return unless win is top or allowNotTop
+              args = Array::slice.call(arguments,1,arguments.length)
+              return f.apply(@,args)
+
+
           dom[ATTACH] win, MSG, _check_html5_init
           initID = "xdm-html5-init-" + _guid()
           locHost = (if (locHost.indexOf("file") is 0) then locHost = "file" else locHost)
