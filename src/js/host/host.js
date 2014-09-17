@@ -2831,7 +2831,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	 *
 	*/
 
-	function render()
+	function render(positions,waitForDom)
 	{
 		var idx 		= 0,
 			args		= arguments,
@@ -2843,17 +2843,17 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		name_params, dest_id, dest_rel_id, css_txt, w, h, st, e, pend;
 
 		if (!config) return false;
-		if (!dom.ready()) {
+		if (!dom.ready() && waitForDom) {
 			dom.wait(function() { render.apply(null, args); args = null });
 			return null;
 		}
 
 		/* if an array of positions is handed in use that instead */
-		if ((args[0] instanceof Array) && args[LEN] == 1) {
-			args = args[0];
+		if (not (positions instanceof Array)) {
+			positions = [positions]
 		}
 
-		while (pos = args[idx++])
+		while (pos = positions[idx++])
 		{
 			pos_id		= pos.id;
 			pos_conf	= (pos_id) ? config.positions[pos_id] : null;

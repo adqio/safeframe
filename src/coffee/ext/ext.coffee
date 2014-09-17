@@ -380,7 +380,7 @@ module.exports = (isExternal,canNest)->
     @private
     ###
     _handle_load = ->
-      return  if loaded
+      return  if hasLoaded
       hasLoaded = true
       _detach win, LOAD, _handle_load
       _set_hyperlink_targets()
@@ -793,7 +793,6 @@ module.exports = (isExternal,canNest)->
 #            _reattach_messaging() #dealing with a bug I couldn't find in this
             #hack to deal with safeframes lack of a message queue
             _handle_load()
-            loaded()
             document.write = originalWrite
             #todo: figure out why this
             window[cbName]= lang.noop
@@ -820,7 +819,7 @@ module.exports = (isExternal,canNest)->
       if css
         css = _ue(css)
         _create_stylesheet css, "sf_custom_css"
-      if html
+      if html?
         html = _ue(html)
         try
           _reattach_messaging()
@@ -1475,6 +1474,7 @@ module.exports = (isExternal,canNest)->
       showAd: showAd
       adShown: adShown
       reload: reload
+      loaded: loaded
 
 
     if !isExternal

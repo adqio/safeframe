@@ -246,6 +246,7 @@ module.exports = (allowNotTop = false)->
         me.w = _cnum(posIDorObj.w, 0)
         me.h = _cnum(posIDorObj.h, 0)
         me.z = _cnum(posIDorObj.z, 0)
+        me.view_id = posIDorObj.view_elem?.id
         me.renderFile = _cstr(posIDorObj.renderFile) or null
         me.supports = _mix({}, posIDorObj.supports or SUPPORTS_FEATURES, true, true, true)
         if not me.w or not me.h
@@ -1710,7 +1711,8 @@ module.exports = (allowNotTop = false)->
         id = (params and params.dest)
         ifr = (id and _elt(id))
         if ifr and params
-          g = _build_geom(posID, ifr, true)
+          #g = _build_geom(posID, ifr, true)
+          g = _getGeom(posID)
           msgObj = ParamHash()
           msgObj.pos = posID
           msgObj.cmd = NOTIFY_GEOM_UPDATE
@@ -1768,7 +1770,8 @@ module.exports = (allowNotTop = false)->
           g = undefined
           msgObj = undefined
           if ifr and params
-            g = _build_geom(posID, ifr, true)
+            #g = _build_geom(posID, ifr, true)
+            g = _getGeom(posID,true)
             msgObj = ParamHash()
             msgObj.pos = posID
             msgObj.cmd = NOTIFY_GEOM_UPDATE
@@ -2226,7 +2229,7 @@ module.exports = (allowNotTop = false)->
       msgObj.w = nWd
       msgObj.h = nHt
       msgObj.cmd = "expand"
-      msgObj.geom = _es(_build_geom(posID, ifr, true))
+      msgObj.geom = _es(_getGeom(posID,true))
       _fire_pub_callback POS_MSG, posID, EXPAND_COMMAND, dx, dy
       _send_response params, msgObj
       ifrSt = par = ifr = params = msgObj = null
@@ -2267,7 +2270,7 @@ module.exports = (allowNotTop = false)->
       unless noMsging
         _fire_pub_callback POS_MSG, posID, COLLAPSE_COMMAND, 0, 0
         msgObj.cmd = (if (isOutside) then "collapsed" else "collapse")
-        msgObj.geom = _es(_build_geom(posID, ifr, true))
+        msgObj.geom = _es(_getGeom(posID, true))
         _send_response params, msgObj
       ifr = ifrSt = par = parSt = params = msgObj = null
       return
@@ -2344,7 +2347,7 @@ module.exports = (allowNotTop = false)->
       cookies = _cookieHash()
       _fire_pub_callback POS_MSG, command, posID, 0, 0
       msgObj.cmd = command
-      msgObj.geom = _es(_build_geom(posID, ifr, true))
+      msgObj.geom = _es(_getGeom(posID, true))
       msgObj.value = cookies[key]
       _send_response params, msgObj
       ifr = params = msgObj = null
@@ -2387,7 +2390,7 @@ module.exports = (allowNotTop = false)->
       document.cookie = key + "=" + c_value
       _fire_pub_callback POS_MSG, command, posID, 0, 0
       msgObj.cmd = command
-      msgObj.geom = _es(_build_geom(posID, ifr, true))
+      msgObj.geom = _es(_getGeom(posID, true))
       msgObj.info = newValue
       msgObj.value = ""
       _send_response params, msgObj
@@ -2456,7 +2459,7 @@ module.exports = (allowNotTop = false)->
     @function
     @param {$sf.host.Position} pos* An instance of an $sf.host.Position object to render. Note that said object must have a corresponding $sf.host.PosConfig, as well as $sf.host.Config must have been set
     ###
-    render = ->
+    render =(positions,waitForDom)->
       idx = 0
       args = arguments
       firstCSSPos = "relative"
@@ -2479,7 +2482,7 @@ module.exports = (allowNotTop = false)->
       e = undefined
       pend = undefined
       return false  unless config
-      unless dom.ready()
+      if !dom.ready() and waitForDom
         dom.wait ->
           render.apply null, args
           args = null
@@ -2488,13 +2491,14 @@ module.exports = (allowNotTop = false)->
         return null
 
       # if an array of positions is handed in use that instead
-      args = args[0]  if (args[0] instanceof Array) and args[LEN] is 1
-      while pos = args[idx++]
+      positions = [positions] if not (positions instanceof Array)
+      while pos = positions[idx++]
         pos_id = pos.id
         pos_conf = (if (pos_id) then config.positions[pos_id] else null)
         if pos_conf
           dest_id = pos_conf.dest
           dest_el = dest_id and _elt(dest_id)
+          view_elem = _elt(pos_conf.view_id) if pos_conf.view_id
           if dest_el
             w = pos_conf.w
             h = pos_conf.h
@@ -2572,7 +2576,7 @@ module.exports = (allowNotTop = false)->
               name_params.conf = ParamHash(pos_conf)
               name_params.meta = pos.meta.toString()
               name_params.html = _es(pos.html)
-              name_params.geom = _es(_build_geom(pos_id, dest_el))
+              name_params.geom = _es(_build_geom(pos_id, view_elem or dest_el))
               name_params.src = pos_conf.renderFile or config.renderFile
               name_params.has_focus = lang.cstr(document.hasFocus())
               css_txt[1] = finalCSSPos
@@ -2626,11 +2630,13 @@ module.exports = (allowNotTop = false)->
       msgObj.pos = posID
       _send_response params, msgObj
 
-    _getGeom = (posID)->
+    _getGeom = (posID,dom_attach_scroll_evt=true)->
       params = rendered_ifrs[posID]
+      posConf = config.positions[posID]
       id = (params and params.dest)
       ifr = (id and _elt(id))
-      g = _build_geom(posID, ifr, true)
+      view_elem = _elt(posConf?.view_id) if posConf?.view_id
+      g = _build_geom(posID, view_elem or ifr, dom_attach_scroll_evt)
       g
     inViewPercentage = (posID) ->
       geom_info = _getGeom(posID)
@@ -2643,7 +2649,7 @@ module.exports = (allowNotTop = false)->
 
         #
         #			 * We got rid of the concept of a "host" file, and just put everything library wise for the host
-        #			 * side into the main host file since it will save us some bytes
+        #			 * side in-to the main host file since it will save us some bytes
         #			 *
         #
         _rect = (if (ieVer) then _getRectIE else _getRectNonIE)
