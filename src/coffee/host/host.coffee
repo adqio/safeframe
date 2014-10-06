@@ -1457,7 +1457,7 @@ module.exports = (allowNotTop = false)->
     @returns {Boolean}
     ###
     usingHTML5 = ->
-      canUseHTML5
+      canUseHTML5 or= window.postMessage?
 
     ###
     Gets a location of the hosting page, stripped of the search hash,

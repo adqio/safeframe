@@ -802,7 +802,7 @@ module.exports = (isExternal,canNest)->
           domElem = document.createElement("div")
           domElem.innerHTML = "_"+str #add something visible at the beginning to deal with ie<9 bug
           for iframe in domElem.getElementsByTagName("iframe")
-            if _cnum(_attr(iframe,"width"),0)>1
+            if _cnum(_attr(iframe,"width"),0)>1 or _cnum(iframe.style.width) > 1
               otherCallbackApplied = true
               if oldOnload = _attr(iframe,"onload")
                 _attr(iframe,"onload","#{cbName}(true);#{oldOnload};")
@@ -995,9 +995,11 @@ module.exports = (isExternal,canNest)->
       ), MAX_MSG_WAIT_TIME
       if can_use_html5
         try
-          top.postMessage params.toString(), ((if (host_cname is "file" or host_cname is "") then "*" else host_cname))
+          console.log("pre error",document.location,params,host_cname)
+          window.parent.postMessage params.toString(), ((if (host_cname is "file" or host_cname is "") then "*" else host_cname))
           sent = true
         catch e
+          console.log("post error",document.location,params,host_cname)
           sent = false
       _call_client_fb "send", params  unless sent
       return
