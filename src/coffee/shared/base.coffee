@@ -6,6 +6,7 @@ logger = require './logger'
 module.exports = do (lang,env,dom,logger)->
   ver:"1-1-0"
   specVersion: "1.1"
+  adjs: true
   lib:
     lang: lang
     dom: dom

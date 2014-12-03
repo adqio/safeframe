@@ -995,11 +995,9 @@ module.exports = (isExternal,canNest)->
       ), MAX_MSG_WAIT_TIME
       if can_use_html5
         try
-          console.log("pre error",document.location,params,host_cname)
           window.parent.postMessage params.toString(), ((if (host_cname is "file" or host_cname is "") then "*" else host_cname))
           sent = true
         catch e
-          console.log("post error",document.location,params,host_cname)
           sent = false
       _call_client_fb "send", params  unless sent
       return
@@ -1480,9 +1478,11 @@ module.exports = (isExternal,canNest)->
 
 
     if !isExternal
-      window.$sf = sf
+      window.$sf or= sf
+      window._$sf_adjs = sf
       render()
     else
-      window.$sf = sf
+      window.$sf or= sf
+      window._$sf_adjs = sf
       sf.ext.render = render
     return sf

@@ -1465,6 +1465,7 @@ module.exports = (allowNotTop = false)->
     ###
     _strippedEncodedLocation = ->
       cleaned = undefined
+      loc = win.location
       pos = loc.href.indexOf("#")
       if pos > -1
         cleaned = loc.href.substr(0, pos)
@@ -2701,6 +2702,9 @@ module.exports = (allowNotTop = false)->
           render: render
           status: status
           inViewPercentage: inViewPercentage
-    window["$sf"] = sf if allowNotTop
+    if allowNotTop
+      window["_$sf_adjs"] = sf
+      window["$sf"] or= sf
+
     sf
 
